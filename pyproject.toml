@@ -23,5 +23,5 @@ testpaths = ["tests"]
 
 [tool.mypy]
 [[tool.mypy.overrides]]
-module = ['kivy.*', 'kivymd.*']
+module = ['kivy.*']
 ignore_missing_imports = true

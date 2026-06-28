@@ -1,1 +1,1 @@
-from .projects_screen import *
+from .project_screen import *

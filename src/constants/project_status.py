@@ -2,6 +2,7 @@ from enum import StrEnum
 
 class ProjectStatus(StrEnum):
     '''Статусы проекта (в работе, не в работе).'''
+
     IN_PROGRESS     = 'in_progress'
     NOT_IN_PROGRESS = 'not_in_progress'
     POSTPONED       = 'postponed'
