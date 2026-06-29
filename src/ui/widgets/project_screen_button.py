@@ -8,7 +8,7 @@ from math import hypot
 
 from ...constants import ColorPalette
 
-class CreateProjectButton(Button):
+class ProjectScreenButton(Button):
     '''Кнопка добавления нового проекта.'''
 
     def __init__(self, **kwargs):
@@ -21,44 +21,38 @@ class CreateProjectButton(Button):
         self.background_down = ''
         self.background_normal = ''
         self.background_color = (0, 0, 0, 0)
-        
-        self.bind(
-            texture_size=self._make_bg,
-            pos=self._do_correct_bg_pos,
-            state=self._change_bg
-        )
-
-    def _make_bg(self, *args):
-        '''Создание фона.'''
-        area = dp(30)
 
         with self.canvas.before: # type: ignore
-            self.bg_color = Color(rgb=hex(ColorPalette.MAIN))
-            self.bg_ellipse = Ellipse(
-                size=(
-                    self.texture_size[1] + area,
-                    self.texture_size[1] + area
-                ),
-                pos=self.pos
-            )
+            self._bg_color = Color(rgb=hex(ColorPalette.MAIN))
+            self._bg_ellipse = Ellipse()
+            self.bind(pos=self._update_bg)
 
-    def _do_correct_bg_pos(self, *args):
-        '''Выравнивание позиции фона кнопки по текстуре текста кнопки.'''
-        self.bg_ellipse.pos = (
-            self.center_x - self.bg_ellipse.size[0] / 2,
-            self.center_y - self.bg_ellipse.size[1] / 2,
+        self.bind(state=self._change_bg)
+
+    def _update_bg(self, *args):
+        '''Выравнивание размера фона по текстуре текста.'''
+        bg_padding = dp(20)
+
+        self._bg_ellipse.size = (
+            self.texture_size[1] + bg_padding,
+            self.texture_size[1] + bg_padding
+        )
+
+        self._bg_ellipse.pos = (
+            self.center_x - self._bg_ellipse.size[0] / 2,
+            self.center_y - self._bg_ellipse.size[1] / 2,
         )
 
     def _change_bg(self, *args):
         '''Изменение фона при нажатии на кнопку.'''
         if self.state == 'down':
-            self.bg_color.rgb = hex(ColorPalette.BUTTON_DOWN)
+            self._bg_color.rgb = hex(ColorPalette.BUTTON_DOWN)
         else:
-            self.bg_color.rgb = hex(ColorPalette.MAIN)
+            self._bg_color.rgb = hex(ColorPalette.MAIN)
 
     def collide_point(self, x, y):
         '''Переопределение метода вычисления области нажатия кнопки.'''
         distance = hypot(x - self.center_x, y - self.center_y)
-        radius = self.bg_ellipse.size[0] / 2
+        radius = self._bg_ellipse.size[0] / 2
 
         return distance <= radius

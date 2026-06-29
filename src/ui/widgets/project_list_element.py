@@ -23,20 +23,21 @@ class ProjectListElement(Button):
         self.background_color = hex(ColorPalette.WHITE)
 
         self.size_hint_y = None
+        
         self.bind(
-            texture_size=self._do_correct_button_size,
+            texture_size=self._update_button_size,
             size=self._update_text_size,
             state=self._change_bg,
         )
 
-        self.padding = (dp(15), dp(10), dp(10), dp(20))
+        self.padding = (dp(10), dp(20), dp(10), dp(10))
 
-    def _do_correct_button_size(self, *args):
+    def _update_button_size(self, *args):
         '''Выравнивание размеров кнопки по текстуре текста.'''
-        self.size = self.texture_size
+        self.height = self.texture_size[1]
 
     def _update_text_size(self, *args):
-        '''Выравнивание области текста по размерам кнопки.'''
+        '''Выравнивание области текста по размеру кнопки.'''
         self.text_size = self.size
 
     def _change_bg(self, *args):

@@ -17,9 +17,12 @@ class Header(BoxLayout):
         self.size_hint_y = None
         self.padding = dp(10)
 
-        self.bind(size=self._make_bg)
+        with self.canvas.before: # type: ignore
+            Color(rgb=hex(ColorPalette.MAIN))
+            self._bg = Rectangle()
+            self.bind(size=self._update_bg, pos=self._update_bg)
 
-        logo = Label(
+        self.logo = Label(
             text='MebeLink',
             bold=True,
             color=hex(ColorPalette.WHITE),
@@ -27,17 +30,16 @@ class Header(BoxLayout):
             size_hint=(None, None)
         )
 
-        logo.bind(texture_size=self._do_correct_size)
+        self.logo.bind(texture_size=self._update_size)
 
-        self.add_widget(logo)
+        self.add_widget(self.logo)
 
-    def _make_bg(self, *args):
-        '''Создание фона.'''
-        with self.canvas.before: # type: ignore
-            Color(rgb=hex(ColorPalette.MAIN))
-            Rectangle(size=self.size, pos=self.pos)
+    def _update_bg(self, *args):
+        '''Выравнивание размера фона по размеру виджета.'''
+        self._bg.size = self.size
+        self._bg.pos = self.pos
 
-    def _do_correct_size(self, instance, *args):
-        '''Выравнивание размеров по текстуре логотипа.'''
-        instance.size = instance.texture_size
-        self.height = instance.height + self.padding[1] * 2 # type: ignore
+    def _update_size(self, *args):
+        '''Выравнивание размера виджета по текстуре текста.'''
+        self.logo.size = self.logo.texture_size
+        self.height = self.logo.height + self.padding[1] * 2 # type: ignore

@@ -1,5 +1,3 @@
-# pyright: reportAttributeAccessIssue=false
-
 from os import environ
 
 environ['KIVY_NO_ARGS'] = 'true'
@@ -24,12 +22,12 @@ class Interface(App):
     def __init__(self, project_service: ProjectService):
         super().__init__()
 
-        self._project_service = project_service
-        self._projects = self._project_service.get_all()
-
         self._screen_manager = ScreenManager()
         self._screen_manager.add_widget(
-            ProjectScreen(self._projects, name='project_screen')
+            ProjectScreen(
+                name='project_screen',
+                project_service=project_service
+            )
         )
 
     def build(self):

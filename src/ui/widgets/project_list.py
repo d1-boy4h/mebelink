@@ -18,32 +18,35 @@ class ProjectList(ScrollView):
 
         self.do_scroll_x = False
 
-        self.bind(size=self._make_bg)
+        with self.canvas.before:
+            Color(rgb=hex(ColorPalette.BACKGROUND))
+            self._bg = Rectangle()
+            self.bind(size=self._update_bg)
 
         self.wrapper = BoxLayout(
             orientation='vertical',
             spacing=dp(5),
             padding=(0, dp(5), 0, 0),
+            size_hint_y=None
         )
 
-        self.wrapper.bind(size=self._do_correct_height)
+        self.wrapper.bind(minimum_height=self._update_height)
         self.add_widget(self.wrapper)
 
-    def _make_bg(self, *args):
-        '''Создание фона.'''
-        with self.canvas.before:
-            Color(rgb=hex(ColorPalette.BACKGROUND))
-            Rectangle(size=self.size, pos=self.pos)
+    def _update_bg(self, *args):
+        '''Выравнивание размера фона по размеру виджета.'''
+        self._bg.size = self.size
+        self._bg.pos = self.pos
 
-    def _do_correct_height(self, instance, *args):
-        '''Выравнивание высоты по количеству элементов.'''
-        instance.height = instance.minimum_height
+    def _update_height(self, *args):
+        '''Выравнивание высоты контейнера по количетсву проектов в списке.'''
+        self.wrapper.height = self.wrapper.minimum_height
 
     def create_elements(self, projects_list: list[Project]):
         '''Заполнение списка проектами.'''
         self.wrapper.clear_widgets()
 
         for project in projects_list:
-            self.wrapper.add_widget(
-                ProjectListElement(project.title)
-            )
+            element = ProjectListElement(project.title)
+            self.wrapper.add_widget(element)
+            element.texture_update()

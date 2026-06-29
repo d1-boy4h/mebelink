@@ -1,8 +1,11 @@
 __pycache__/
 
+.buildozer/
 .venv/
 .mypy_cache/
 .pytest_cache/
+
+bin/
 logs/
 
 data.db

@@ -5,6 +5,7 @@ description = "Mobile app for furniture management"
 readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+    "buildozer>=1.6.0",
     "kivy>=2.3.1",
     "pydantic>=2.13.4",
     "sqlalchemy>=2.0.51",

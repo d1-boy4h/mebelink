@@ -11,7 +11,15 @@ class App:
     '''Корневой класс приложения.'''
 
     def __init__(self):
+        Path('logs/').mkdir(exist_ok=True)
+        logging.basicConfig(
+            filename=f'logs/{date.today()}.log',
+            format='%(asctime)s [%(levelname)s | %(name)s] %(message)s',
+            level=logging.INFO
+        )
+
         self._logger = logging.getLogger('App')
+        self._logger.info('Запус клиента...')
 
         self._db = Database()
         self._engine = self._db.engine
@@ -22,16 +30,5 @@ class App:
         self._interface = Interface(self._project_service)
 
     def run(self):
-        Path('logs/').mkdir(exist_ok=True)
-        logging.basicConfig(
-            filename=f'logs/{date.today()}.log',
-            format='%(asctime)s [%(levelname)s | %(name)s] %(message)s',
-            level=logging.INFO
-        )
-
-        self._logger.info('Запус клиента...')
-        self._main()
-        self._logger.info('Клиент завершил свою работу')
-
-    def _main(self):
         self._interface.run()
+        self._logger.info('Клиент завершил свою работу')
