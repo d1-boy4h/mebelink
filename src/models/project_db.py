@@ -1,6 +1,6 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime
+from datetime import datetime, date
 
 from ..constants import ProjectStatus
 from ..db.base import Base
@@ -20,5 +20,6 @@ class ProjectDB(Base):
     status: Mapped[ProjectStatus] = mapped_column(String(16), nullable=False)
     is_improvements: Mapped[bool] = mapped_column(nullable=False)
     created_date: Mapped[datetime] = mapped_column(nullable=False)
-    start_date: Mapped[datetime | None]
-    end_date: Mapped[datetime | None]
+    start_date: Mapped[date] = mapped_column(nullable=False)
+    end_date: Mapped[date | None]
+    address: Mapped[str | None]

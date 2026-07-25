@@ -1,34 +1,100 @@
-from os import environ
+import flet as ft
+from flet import run as run_flet_engine
 
-environ['KIVY_NO_ARGS'] = 'true'
-environ['KIVY_LOG_MODE'] = 'PYTHON'
+from .screens import (
+    BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
+)
 
-from kivy.config import Config
+from ..repositories import ProjectRepository
+from ..constants import ColorPalette, RouterPaths
 
-Config.set('graphics', 'width', 420)
-Config.set('graphics', 'height', 720)
-
-from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager
-
-from ..services import ProjectService
-from .screen import ProjectScreen
-
-class Interface(App):
+class Interface:
     '''Корневой класс интерфейса.'''
 
-    title = 'MebeLink: Управление мебельными заказами'
+    def __init__(self, project_repo: ProjectRepository):
+        self._project_repo = project_repo
 
-    def __init__(self, project_service: ProjectService):
-        super().__init__()
+    def _get_view(self, route: str) -> ft.View:
+        '''Возвращает список страниц для роутера.'''
 
-        self._screen_manager = ScreenManager()
-        self._screen_manager.add_widget(
-            ProjectScreen(
-                name='project_screen',
-                project_service=project_service
+        screen = self._screens.get(route)
+        if screen is None:
+            screen = self._screens[RouterPaths.HOME_SCREEN]
+
+        screen_content = screen.build()
+        safe_screen = ft.SafeArea(screen_content, expand=True)
+        view = ft.View([safe_screen], route, padding=0)
+
+        return view
+
+    def _on_route_change(self, e: ft.RouteChangeEvent):
+        '''Обработка навигации по страницам (page.navigate).'''
+
+        if e.route == self._current_route:
+            return None
+
+        self._current_route: str = e.route
+
+        view_list = self._page.views
+        for index, view in enumerate(view_list):
+            if e.route == view.route:
+                new_view_list = view_list[:index+1]
+                view_list.clear()
+                view_list.extend(new_view_list)
+
+                if e.route == RouterPaths.HOME_SCREEN:
+                    home_screen = self._screens[RouterPaths.HOME_SCREEN]
+                    home_screen.update_project_list() # type: ignore
+
+                if e.route == RouterPaths.PROJECT_SCREEN:
+                    project_screen = self._screens[RouterPaths.PROJECT_SCREEN]
+                    project_screen.update_info() # type: ignore
+                
+                break
+        else:
+            view = self._get_view(e.route)
+            self._page.views.append(view)
+
+        self._page.update()
+
+    def _on_view_pop(self, *args):
+        '''Обработка кнопки "Назад" на смартфоне.'''
+
+        view_list = self._page.views
+        last_view = view_list[-2]
+        self._page.navigate(last_view.route)
+
+    def _setup(self, page: ft.Page):
+        '''Инициализация Flet-приложения.'''
+
+        self._page = page
+        self._current_route = RouterPaths.HOME_SCREEN
+
+        default_screen_params = page, self._project_repo
+        self._screens: dict[str, BaseScreen] = {
+            RouterPaths.HOME_SCREEN: HomeScreen(*default_screen_params),
+            RouterPaths.PROJECT_SCREEN: ProjectScreen(*default_screen_params),
+            RouterPaths.PROJECT_SETTINGS_SCREEN: ProjectSettingsScreen(
+                *default_screen_params
+            )
+        }
+
+        page.title = 'MebeLink'
+        page.window.width = 360
+        page.window.height = 660
+        page.padding = 0
+        page.theme = ft.Theme(
+            system_overlay_style=ft.SystemOverlayStyle(
+                status_bar_color=ColorPalette.MAIN,
             )
         )
 
-    def build(self):
-        return self._screen_manager
+        page.views.clear()
+        page.on_route_change = self._on_route_change
+        page.on_view_pop = self._on_view_pop
+
+        page.views.append(self._get_view(self._current_route))
+
+    def run(self):
+        '''Обёртка для функции run из Flet для инкапсуляции.'''
+        run_flet_engine(self._setup)

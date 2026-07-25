@@ -16,6 +16,7 @@ class ProjectRepository:
 
     def _to_orm(self, project: Project) -> ProjectDB:
         '''Преобразование Pydantic-модели в ORM.'''
+
         return ProjectDB(
             uuid=str(project.uuid),
             title=project.title,
@@ -23,11 +24,13 @@ class ProjectRepository:
             is_improvements=project.is_improvements,
             created_date=project.created_date,
             start_date=project.start_date,
-            end_date=project.end_date
+            end_date=project.end_date,
+            address=project.address
         )
 
     def _to_pydantic(self, project_db: ProjectDB) -> Project:
         '''Преобразование ORM-модели в Pydantic.'''
+
         return Project(
             uuid=UUID(project_db.uuid),
             title=project_db.title,
@@ -35,11 +38,13 @@ class ProjectRepository:
             is_improvements=project_db.is_improvements,
             created_date=project_db.created_date,
             start_date=project_db.start_date,
-            end_date=project_db.end_date
+            end_date=project_db.end_date,
+            address=project_db.address
         )
 
-    def save(self, project: Project) -> Project:
+    def _save(self, project: Project) -> Project:
         '''Сохранение проекта в базе данных.'''
+
         project_db = self._to_orm(project)
 
         with Session(self._engine) as session:
@@ -59,8 +64,13 @@ class ProjectRepository:
                 )
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
     
+    def create_project(self, title: str) -> Project:
+        '''Создание проекта.'''
+        return self._save(Project(title=title))
+
     def get_by_uuid(self, uuid: UUID) -> Project | None:
         '''Получение проекта по uuid.'''
+
         with Session(self._engine) as session:
             project_db = session.get(ProjectDB, str(uuid))
 
@@ -74,6 +84,7 @@ class ProjectRepository:
 
     def get_all(self) -> list[Project]:
         '''Получение всех проектов.'''
+
         with Session(self._engine) as session:
             projects_db = session.execute(select(ProjectDB)).scalars().all()
 
@@ -84,6 +95,7 @@ class ProjectRepository:
 
     def update(self, project: Project) -> Project:
         '''Обновление данных проекта.'''
+
         with Session(self._engine) as session:
             project_db = session.get(ProjectDB, str(project.uuid))
 
@@ -93,8 +105,14 @@ class ProjectRepository:
             project_db.title = project.title
             project_db.status = project.status
             project_db.is_improvements = project.is_improvements
-            project_db.start_date = project.start_date
+
+            if project.start_date:
+                project_db.start_date = project.start_date
+            else:
+                project_db.start_date = project.created_date
+
             project_db.end_date = project.end_date
+            project_db.address = project.address
 
             try:
                 session.commit()
@@ -112,6 +130,7 @@ class ProjectRepository:
 
     def delete(self, uuid: UUID) -> Project | None:
         '''Удаление проекта.'''
+
         with Session(self._engine) as session:
             project_db = session.get(ProjectDB, str(uuid))
 
