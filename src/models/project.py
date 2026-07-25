@@ -1,7 +1,10 @@
+from datetime import date, datetime
 from uuid import UUID, uuid4
-from datetime import datetime, date
+
 from pydantic import BaseModel, Field, field_validator
+
 from ..constants import ProjectStatus
+
 
 class Project(BaseModel):
     '''Pydantic-модель мебельного проекта.'''
@@ -14,6 +17,7 @@ class Project(BaseModel):
     start_date: date = Field(default_factory=date.today)
     end_date: date | None = None
     address: str | None = None
+    phone: str | None = None
 
     @field_validator('title')
     @classmethod
@@ -22,12 +26,3 @@ class Project(BaseModel):
             return 'Новый проект'
 
         return v.strip()
-
-    @field_validator('start_date')
-    @classmethod
-    def set_start_date(cls, v: date, info) -> date:
-        if v is None:
-            created_date: datetime = info.adte.get('created_date')
-            return created_date.date()
-
-        return v

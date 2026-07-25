@@ -1,11 +1,13 @@
-from sqlalchemy import Engine, select
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from uuid import UUID
 import logging
+from uuid import UUID
 
-from ..models import Project, ProjectDB
+from sqlalchemy import Engine, select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+
 from ..constants import ProjectStatus
+from ..models import Project, ProjectDB
+
 
 class ProjectRepository:
     '''Репозиторий работы с мебельными проектами.'''
@@ -25,7 +27,8 @@ class ProjectRepository:
             created_date=project.created_date,
             start_date=project.start_date,
             end_date=project.end_date,
-            address=project.address
+            address=project.address,
+            phone=project.phone
         )
 
     def _to_pydantic(self, project_db: ProjectDB) -> Project:
@@ -39,7 +42,8 @@ class ProjectRepository:
             created_date=project_db.created_date,
             start_date=project_db.start_date,
             end_date=project_db.end_date,
-            address=project_db.address
+            address=project_db.address,
+            phone=project_db.phone
         )
 
     def _save(self, project: Project) -> Project:
@@ -63,7 +67,7 @@ class ProjectRepository:
                     f'Ошибка сохранения проекта \'{str(project.uuid)}\': {error}'
                 )
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
-    
+
     def create_project(self, title: str) -> Project:
         '''Создание проекта.'''
         return self._save(Project(title=title))
@@ -79,7 +83,7 @@ class ProjectRepository:
                     f'Проект \'{str(uuid)}\' получен из базы данных'
                 )
                 return self._to_pydantic(project_db)
-            
+
             return None
 
     def get_all(self) -> list[Project]:
@@ -113,6 +117,7 @@ class ProjectRepository:
 
             project_db.end_date = project.end_date
             project_db.address = project.address
+            project_db.phone = project.phone
 
             try:
                 session.commit()

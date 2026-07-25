@@ -1,9 +1,11 @@
+from datetime import date, datetime
+
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime, date
 
 from ..constants import ProjectStatus
 from ..db.base import Base
+
 
 class ProjectDB(Base):
     '''ORM-модель мебельного проекта.'''
@@ -23,3 +25,4 @@ class ProjectDB(Base):
     start_date: Mapped[date] = mapped_column(nullable=False)
     end_date: Mapped[date | None]
     address: Mapped[str | None]
+    phone: Mapped[str | None]

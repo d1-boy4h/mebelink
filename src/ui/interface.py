@@ -51,6 +51,7 @@ class Interface:
                     project_screen.update_info() # type: ignore
                 
                 break
+
         else:
             view = self._get_view(e.route)
             self._page.views.append(view)
@@ -83,6 +84,7 @@ class Interface:
         page.window.width = 360
         page.window.height = 660
         page.padding = 0
+        page.theme_mode = ft.ThemeMode.LIGHT
         page.theme = ft.Theme(
             system_overlay_style=ft.SystemOverlayStyle(
                 status_bar_color=ColorPalette.MAIN,

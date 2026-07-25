@@ -1,11 +1,13 @@
-import flet as ft
 from datetime import timedelta
 
-from .base_screen import BaseScreen
+import flet as ft
+
+from ...constants import ColorPalette, ProjectStatus, RouterPaths
+from ...repositories import ProjectRepository
 from ..components import Header
 from ..store import store
-from ...repositories import ProjectRepository
-from ...constants import ColorPalette, RouterPaths, ProjectStatus
+from .base_screen import BaseScreen
+
 
 class ProjectSettingsScreen(BaseScreen):
     '''Экран проекта.'''
@@ -26,7 +28,7 @@ class ProjectSettingsScreen(BaseScreen):
             raise RuntimeError('Такого проекта не существует')
 
         header_component = Header(self._page, self._page.route)
-        header = header_component.build() 
+        header = header_component.build()
 
         self._title = ft.TextField(
             hint_text='Нужно заполнить!',
@@ -34,7 +36,6 @@ class ProjectSettingsScreen(BaseScreen):
             text_size=16,
             hint_style=ft.TextStyle(color=ColorPalette.RED),
             value=store.current_project.title,
-            color='#000',
             on_change=self._button_switch,
             expand=True
         )
@@ -48,7 +49,20 @@ class ProjectSettingsScreen(BaseScreen):
             label='Адрес',
             hint_style=ft.TextStyle(color=ColorPalette.GRAY),
             value=address_text,
-            color='#000',
+            expand=True
+        )
+
+        phone_number = ''
+        if store.current_project.phone:
+            phone_number = store.current_project.phone
+
+        self._phone = ft.TextField(
+            hint_text='+79123456789',
+            label='Номер телефона',
+            hint_style=ft.TextStyle(color=ColorPalette.GRAY),
+            keyboard_type=ft.KeyboardType.PHONE,
+            input_filter=ft.InputFilter(r'^[0-9+]*$'),
+            value=phone_number,
             expand=True
         )
 
@@ -115,6 +129,7 @@ class ProjectSettingsScreen(BaseScreen):
 
         title = self._get_wrapper(self._title, ft.Icons.TITLE)
         address = self._get_wrapper(self._address, ft.Icons.LOCATION_ON)
+        phone = self._get_wrapper(self._phone, ft.Icons.PHONE)
         status = self._get_wrapper(self._status, ft.Icons.CONSTRUCTION)
         improvements = self._get_wrapper(self._improvements, ft.Icons.BUILD)
         dates = self._get_wrapper(dates_buttons, ft.Icons.DATE_RANGE)
@@ -134,6 +149,7 @@ class ProjectSettingsScreen(BaseScreen):
         body_content = ft.ListView([
             title,
             address,
+            phone,
             status,
             improvements,
             dates,
@@ -170,11 +186,12 @@ class ProjectSettingsScreen(BaseScreen):
         '''Сохранение проекта.'''
 
         if store.current_project is None:
-            return None
+            return
 
         project = store.current_project
         project.title = self._title.value
         project.address = self._address.value if self._address.value else None
+        project.phone = self._phone.value if self._phone.value else None
 
         if self._status.value:
             project.status = ProjectStatus(self._status.value)
@@ -208,7 +225,7 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if self._end_date and new_date > self._end_date:
-                self._show_error_notif('Ошибка: дата начала проекта должна быть раньше его завершения!')
+                self._show_error_notif('Ошибка: дата начала проекта должна быть раньше его завершения')
                 self._start_date_picker.value = self._start_date
                 return None
 

@@ -74,7 +74,6 @@ class HomeScreen(BaseScreen):
 
         self._text_input = ft.TextField(
             hint_text='Новый проект',
-            color='#000',
             autofocus=True,
             border=ft.InputBorder.NONE,
             text_size=20

@@ -1,12 +1,11 @@
 import flet as ft
 
+from ...constants import ColorPalette, RouterPaths
+from ...repositories import ProjectRepository
+from ..components import Header, ProjectInfoBlock
+from ..store import store
 from .base_screen import BaseScreen
 
-from ..store import store
-from ..components import Header, ProjectInfoBlock
-
-from ...repositories import ProjectRepository
-from ...constants import ColorPalette, RouterPaths
 
 class ProjectScreen(BaseScreen):
     '''Экран проекта.'''
@@ -30,7 +29,7 @@ class ProjectScreen(BaseScreen):
         self._header_component = Header(self._page, self._page.route)
         header = self._header_component.build()
 
-        self._project_info = ProjectInfoBlock(project)
+        self._project_info = ProjectInfoBlock(project, self._page)
 
         delete_button = ft.Button(
             'Удалить проект',
@@ -62,7 +61,7 @@ class ProjectScreen(BaseScreen):
             spacing=0
         )
 
-    def _show_create_project_modal(self, *args):
+    def _show_create_project_modal(self, _):
         '''Отображение модального окна подтверждения удаления проекта.'''
 
         accept_button = ft.Button(
@@ -79,7 +78,7 @@ class ProjectScreen(BaseScreen):
 
         modal = ft.AlertDialog(
             title='Вы уверены?',
-            title_text_style=ft.TextStyle(size=20, color='#000'),
+            title_text_style=ft.TextStyle(size=20),
             shape=ft.RoundedRectangleBorder(radius=5),
             actions=[accept_button],
             bgcolor='#fff'
@@ -87,7 +86,7 @@ class ProjectScreen(BaseScreen):
 
         self._page.show_dialog(modal)
 
-    def _on_project_delete(self, *args):
+    def _on_project_delete(self, _):
         '''Удаление проекта.'''
 
         project = store.current_project
