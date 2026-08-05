@@ -2,7 +2,7 @@ import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
 from ...repositories import ProjectRepository
-from ..components import Header, ProjectInfoBlock
+from ..components import GalleryBlock, Header, InfoBlock
 from ..store import store
 from .base_screen import BaseScreen
 
@@ -29,7 +29,8 @@ class ProjectScreen(BaseScreen):
         self._header_component = Header(self._page, self._page.route)
         header = self._header_component.build()
 
-        self._project_info = ProjectInfoBlock(project, self._page)
+        self._info_block = InfoBlock(project, self._page)
+        self._gallery_block = GalleryBlock()
 
         delete_button = ft.Button(
             'Удалить проект',
@@ -44,7 +45,11 @@ class ProjectScreen(BaseScreen):
         )
 
         body_content = ft.ListView(
-            [self._project_info.build(), delete_button],
+            [
+                self._info_block.build(),
+                self._gallery_block.build(),
+                delete_button
+            ],
             spacing=20
         )
 
@@ -78,7 +83,7 @@ class ProjectScreen(BaseScreen):
 
         modal = ft.AlertDialog(
             title='Вы уверены?',
-            title_text_style=ft.TextStyle(size=20),
+            title_text_style=ft.TextStyle(size=20, color='#000'),
             shape=ft.RoundedRectangleBorder(radius=5),
             actions=[accept_button],
             bgcolor='#fff'
@@ -97,8 +102,9 @@ class ProjectScreen(BaseScreen):
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()
 
-    def update_info(self):
+    def update_blocks(self):
         '''Обновление информации о проекте.'''
 
         self._header_component.refresh_title()
-        self._project_info.refresh_rows()
+        self._info_block.refresh_rows()
+        self._gallery_block.refresh()

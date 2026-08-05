@@ -1,12 +1,10 @@
 import flet as ft
 from flet import run as run_flet_engine
 
-from .screens import (
-    BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
-)
-
-from ..repositories import ProjectRepository
 from ..constants import ColorPalette, RouterPaths
+from ..repositories import ProjectRepository
+from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
+
 
 class Interface:
     '''Корневой класс интерфейса.'''
@@ -31,7 +29,7 @@ class Interface:
         '''Обработка навигации по страницам (page.navigate).'''
 
         if e.route == self._current_route:
-            return None
+            return
 
         self._current_route: str = e.route
 
@@ -48,7 +46,7 @@ class Interface:
 
                 if e.route == RouterPaths.PROJECT_SCREEN:
                     project_screen = self._screens[RouterPaths.PROJECT_SCREEN]
-                    project_screen.update_info() # type: ignore
+                    project_screen.update_blocks() # type: ignore
                 
                 break
 

@@ -1,11 +1,10 @@
 import flet as ft
-from flet.controls.services.url_launcher import UrlLauncher
 
 from ...constants import ColorPalette
 from ...models import Project
 
 
-class ProjectInfoBlock:
+class InfoBlock:
     '''Блок информации о проекте для экрана проектов.'''
 
     def __init__(self, project: Project, page: ft.Page):
@@ -48,7 +47,7 @@ class ProjectInfoBlock:
         icon: ft.IconData,
         text: str | None,
         icon_color: ft.ColorValue = ColorPalette.MAIN,
-        phone_number: bool = False
+        is_phone_number: bool = False
     ) -> ft.Control:
         '''Возвращает строку (ft.Row) информации о проекте.'''
 
@@ -62,8 +61,8 @@ class ProjectInfoBlock:
             style=ft.TextStyle(height=1.1)
         )
 
-        content = text_widget
-        if phone_number:
+        content: ft.Control = text_widget
+        if is_phone_number and text.startswith('+') and len(text) >= 12:
             text_widget.color = ColorPalette.MAIN
             text_widget.style = ft.TextStyle(
                 height=1.1,
@@ -98,7 +97,7 @@ class ProjectInfoBlock:
         phone = self._get_row_info(
             ft.Icons.PHONE,
             self._project.phone,
-            phone_number=True
+            is_phone_number=True
         )
 
         status = self._get_row_info(

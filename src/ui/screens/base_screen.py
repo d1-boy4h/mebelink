@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 import flet as ft
+
 
 class BaseScreen(ABC):
     '''Базовый класс для экранов.'''
@@ -10,4 +12,3 @@ class BaseScreen(ABC):
     @abstractmethod
     def build(self) -> ft.Control:
         '''Постройка интерфейса экрана.'''
-        pass

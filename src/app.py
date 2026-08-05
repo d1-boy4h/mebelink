@@ -1,11 +1,12 @@
 import logging
-from sys import stdout
 from datetime import date
 from pathlib import Path
+from sys import stdout
 
 from .db import Database
 from .repositories import ProjectRepository
 from .ui import Interface
+
 
 class App:
     '''Корневой класс приложения.'''
@@ -38,7 +39,7 @@ class App:
         formatter = logging.Formatter(formatter_str)
 
         file_handler = logging.FileHandler(
-            f'logs/{date.today()}.log',
+            f'logs/{date.today()}.log',  # noqa: DTZ011
             encoding='utf-8'
         )
         file_handler.setFormatter(formatter)

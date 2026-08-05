@@ -23,12 +23,13 @@ if __name__ == '__main__':
         is_debug = True
         commands = [
             (['mypy', '.',], 'Проверка типов mypy'),
+            (['ruff', 'check',], 'Линтинг и форматтинг Ruff'),
             (['pytest', '-v'], 'unit-тестирование')
         ]
 
         for cmd, desc in commands:
             print(f':: [bold blue]{desc}...[/]')
-            code = subprocess.run(cmd).returncode
+            code = subprocess.run(cmd, check=False).returncode
             if code == 5: continue # Игнорирование ошибки об отсутствии тестов
             if code >= 1:
                 sys.exit(1)
@@ -38,8 +39,7 @@ if __name__ == '__main__':
 
 # TODO-лист
 
+# Файлы
 # Тудушки
 # Сделать авто удаление логов по дням и по количеству строк
 # Закомментить дебаг-систему в этом файле
-
-# Файлы

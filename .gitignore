@@ -1,8 +1,6 @@
-__pycache__/
-
 .venv/
-.mypy_cache/
-.pytest_cache/
+.*_cache/
+__pycache__/
 
 build/
 logs/

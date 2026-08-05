@@ -62,6 +62,7 @@ class ProjectSettingsScreen(BaseScreen):
             hint_style=ft.TextStyle(color=ColorPalette.GRAY),
             keyboard_type=ft.KeyboardType.PHONE,
             input_filter=ft.InputFilter(r'^[0-9+]*$'),
+            max_length=12,
             value=phone_number,
             expand=True
         )
@@ -227,7 +228,6 @@ class ProjectSettingsScreen(BaseScreen):
             if self._end_date and new_date > self._end_date:
                 self._show_error_notif('Ошибка: дата начала проекта должна быть раньше его завершения')
                 self._start_date_picker.value = self._start_date
-                return None
 
             self._start_date = new_date
             self._start_date_button.content = new_date.strftime('%d.%m.%y')
@@ -243,7 +243,6 @@ class ProjectSettingsScreen(BaseScreen):
             if new_date < self._start_date:
                 self._show_error_notif('Ошибка: дата завершения проекта должна быть позже его начала!')
                 self._end_date_picker.value = self._end_date
-                return None
 
             self._end_date = new_date
             self._end_date_button.content = new_date.strftime('%d.%m.%y')

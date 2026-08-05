@@ -1,12 +1,12 @@
 import flet as ft
 
+from ...constants import ColorPalette, RouterPaths
+from ...models import Project
+from ...repositories import ProjectRepository
+from ..components import Header, ProjectElement
+from ..store import store
 from .base_screen import BaseScreen
 
-from ..components import Header, ProjectElement
-from ...repositories import ProjectRepository
-from ...models import Project
-from ...constants import ColorPalette, RouterPaths
-from ..store import store
 
 class HomeScreen(BaseScreen):
     '''Домашний экран со списком проектов.'''

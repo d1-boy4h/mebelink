@@ -4,7 +4,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from ..constants import ProjectStatus
-from ..db.base import Base
+from ..db import Base
 
 
 class ProjectDB(Base):

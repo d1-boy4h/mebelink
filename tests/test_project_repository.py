@@ -1,8 +1,9 @@
 from pytest import fixture
 
 from src.db import Database
-from src.repositories import ProjectRepository
 from src.models import Project
+from src.repositories import ProjectRepository
+
 
 @fixture(scope='module')
 def repo():

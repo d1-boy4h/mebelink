@@ -1,8 +1,10 @@
+from collections.abc import Callable
+
 import flet as ft
-from typing import Callable
 
 from ...constants import ColorPalette, ProjectStatus
 from ...models import Project
+
 
 class ProjectElement:
     '''Элемент списка проектов для домашнего экрана.'''

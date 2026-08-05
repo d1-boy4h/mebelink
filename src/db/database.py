@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine
+
 from .base import Base
+
 
 class Database:
     '''Управление подключением к локальной SQLite.'''

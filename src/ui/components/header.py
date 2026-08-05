@@ -1,7 +1,8 @@
 import flet as ft
 
-from ..store import store
 from ...constants import ColorPalette, RouterPaths
+from ..store import store
+
 
 class Header:
     '''Шапка приложения.'''

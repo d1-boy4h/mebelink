@@ -1,5 +1,6 @@
 from enum import StrEnum
 
+
 class RouterPaths(StrEnum):
     '''Пути для экранов.'''
 

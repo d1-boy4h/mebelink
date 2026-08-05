@@ -57,14 +57,15 @@ class ProjectRepository:
             try:
                 session.commit()
                 self._logger.info(
-                    f'Проект \'{str(project.uuid)}\' сохранён в базу данных'
+                    f'Проект \'{project.uuid!s}\' сохранён в базу данных'
                 )
 
                 return self._to_pydantic(project_db)
+
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
-                    f'Ошибка сохранения проекта \'{str(project.uuid)}\': {error}'
+                    f'Ошибка сохранения проекта \'{project.uuid!s}\': {error}'
                 )
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
 
@@ -80,7 +81,7 @@ class ProjectRepository:
 
             if project_db:
                 self._logger.info(
-                    f'Проект \'{str(uuid)}\' получен из базы данных'
+                    f'Проект \'{uuid!s}\' получен из базы данных'
                 )
                 return self._to_pydantic(project_db)
 
@@ -104,7 +105,7 @@ class ProjectRepository:
             project_db = session.get(ProjectDB, str(project.uuid))
 
             if not project_db:
-                raise ValueError(f'Проект \'{str(project.uuid)}\' не найден')
+                raise ValueError(f'Проект \'{project.uuid!s}\' не найден')
 
             project_db.title = project.title
             project_db.status = project.status
@@ -121,15 +122,14 @@ class ProjectRepository:
 
             try:
                 session.commit()
-                self._logger.info(
-                    f'Проект \'{str(project.uuid)}\' обновлён'
-                )
+                self._logger.info(f'Проект \'{project.uuid!s}\' обновлён')
 
                 return self._to_pydantic(project_db)
+
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
-                    f'Ошибка обновления проекта \'{str(project.uuid)}\': {error}'
+                    f'Ошибка обновления проекта \'{project.uuid!s}\': {error}'
                 )
                 raise RuntimeError(f'Ошибка обновления проекта: {error}')
 
@@ -148,14 +148,13 @@ class ProjectRepository:
 
             try:
                 session.commit()
-                self._logger.info(
-                    f'Проект \'{str(uuid)}\' удалён'
-                )
-
+                self._logger.info(f'Проект \'{uuid!s}\' удалён')
                 return deleted_project
+
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
                     f'Ошибка удаления проекта \'{id}\': {error}'
                 )
+
                 raise RuntimeError(f'Ошибка удаления проекта: {error}')

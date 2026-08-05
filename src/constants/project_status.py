@@ -1,5 +1,7 @@
 from enum import StrEnum
+
 from .color_palette import ColorPalette
+
 
 class ProjectStatus(StrEnum):
     '''Статусы проекта (в работе, не в работе).'''
