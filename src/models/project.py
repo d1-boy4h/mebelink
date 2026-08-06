@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field, field_validator
 
 from ..constants import ProjectStatus
+from .file import File
 
 
 class Project(BaseModel):
@@ -18,6 +19,7 @@ class Project(BaseModel):
     end_date: date | None = None
     address: str | None = None
     phone: str | None = None
+    files: list[File] = Field(default_factory=list)
 
     @field_validator('title')
     @classmethod

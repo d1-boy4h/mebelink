@@ -4,7 +4,8 @@ from pathlib import Path
 from sys import stdout
 
 from .db import Database
-from .repositories import ProjectRepository
+from .repositories import FileRepository, ProjectRepository
+from .services import FileService
 from .ui import Interface
 
 
@@ -21,6 +22,9 @@ class App:
         self._engine = self._db.engine
 
         self._project_repo = ProjectRepository(self._engine)
+        self._file_repo = FileRepository(self._engine)
+
+        self._file_service = FileService(self._file_repo, Path('files/'))
 
         self._interface = Interface(self._project_repo)
 

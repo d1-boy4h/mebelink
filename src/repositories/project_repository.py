@@ -17,7 +17,7 @@ class ProjectRepository:
         self._logger = logging.getLogger('ProjectRepository')
 
     def _to_orm(self, project: Project) -> ProjectDB:
-        '''Преобразование Pydantic-модели в ORM.'''
+        '''Преобразование модели из Pydantic в ORM.'''
 
         return ProjectDB(
             uuid=str(project.uuid),
@@ -32,7 +32,7 @@ class ProjectRepository:
         )
 
     def _to_pydantic(self, project_db: ProjectDB) -> Project:
-        '''Преобразование ORM-модели в Pydantic.'''
+        '''Преобразование модели из ORM в Pydantic.'''
 
         return Project(
             uuid=UUID(project_db.uuid),
@@ -67,6 +67,7 @@ class ProjectRepository:
                 self._logger.error(
                     f'Ошибка сохранения проекта \'{project.uuid!s}\': {error}'
                 )
+
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
 
     def create_project(self, title: str) -> Project:
@@ -131,6 +132,7 @@ class ProjectRepository:
                 self._logger.error(
                     f'Ошибка обновления проекта \'{project.uuid!s}\': {error}'
                 )
+
                 raise RuntimeError(f'Ошибка обновления проекта: {error}')
 
     def delete(self, uuid: UUID) -> Project | None:
@@ -138,9 +140,7 @@ class ProjectRepository:
 
         with Session(self._engine) as session:
             project_db = session.get(ProjectDB, str(uuid))
-
-            if not project_db:
-                return None
+            if not project_db: return None
 
             deleted_project = self._to_pydantic(project_db)
 
@@ -149,6 +149,7 @@ class ProjectRepository:
             try:
                 session.commit()
                 self._logger.info(f'Проект \'{uuid!s}\' удалён')
+
                 return deleted_project
 
             except SQLAlchemyError as error:

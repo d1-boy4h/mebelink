@@ -11,7 +11,7 @@ class FileDB(Base):
 
     __tablename__ = 'files'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     project_uuid: Mapped[str] = mapped_column(
         String(36),
         ForeignKey('projects.uuid', ondelete='CASCADE'),
