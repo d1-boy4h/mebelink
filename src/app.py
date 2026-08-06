@@ -24,7 +24,7 @@ class App:
         self._project_repo = ProjectRepository(self._engine)
         self._file_repo = FileRepository(self._engine)
 
-        self._file_service = FileService(self._file_repo, Path('files/'))
+        self._file_service = FileService(self._file_repo, Path('assets/'))
 
         self._interface = Interface(self._project_repo)
 

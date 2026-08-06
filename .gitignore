@@ -4,5 +4,6 @@ __pycache__/
 
 build/
 logs/
+assets/
 
 data.db
