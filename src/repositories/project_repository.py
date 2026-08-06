@@ -46,7 +46,7 @@ class ProjectRepository:
             phone=project_db.phone
         )
 
-    def _save(self, project: Project) -> Project:
+    def save(self, project: Project) -> Project:
         '''Сохранение проекта в базе данных.'''
 
         project_db = self._to_orm(project)
@@ -70,10 +70,6 @@ class ProjectRepository:
 
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
 
-    def create_project(self, title: str) -> Project:
-        '''Создание проекта.'''
-        return self._save(Project(title=title))
-
     def get_by_uuid(self, uuid: UUID) -> Project | None:
         '''Получение проекта по uuid.'''
 
@@ -94,9 +90,11 @@ class ProjectRepository:
         with Session(self._engine) as session:
             projects_db = session.execute(select(ProjectDB)).scalars().all()
 
-            self._logger.info(
-                f'Проектов получено из базы данных: {len(projects_db)}'
-            )
+            if len(projects_db):
+                self._logger.info(
+                    f'Проектов получено из базы данных: {len(projects_db)}'
+                )
+
             return [self._to_pydantic(project) for project in projects_db]
 
     def update(self, project: Project) -> Project:

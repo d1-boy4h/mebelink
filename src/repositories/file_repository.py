@@ -84,9 +84,10 @@ class FileRepository:
                 select(FileDB).where(FileDB.project_uuid == str(project_uuid))
             ).scalars().all()
 
-            self._logger.info(
-                f'Файлов получено из базы данных: {len(files_db)}'
-            )
+            if len(files_db):
+                self._logger.info(
+                    f'Файлов получено из базы данных: {len(files_db)}'
+                )
 
             return [self._to_pydantic(file) for file in files_db]
 

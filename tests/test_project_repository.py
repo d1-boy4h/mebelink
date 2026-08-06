@@ -20,7 +20,7 @@ def project():
 def test_save_and_load(repo, project):
     '''Проверка загрузки и выгрузки проекта из базы данных.'''
 
-    repo._save(project)
+    repo.save(project)
 
     loaded_project = repo.get_by_uuid(project.uuid)
     assert project == loaded_project

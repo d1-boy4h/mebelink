@@ -1,7 +1,7 @@
 import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
-from ...repositories import ProjectRepository
+from ...services import ProjectService
 from ..components import GalleryBlock, Header, InfoBlock
 from ..store import store
 from .base_screen import BaseScreen
@@ -13,7 +13,7 @@ class ProjectScreen(BaseScreen):
     def __init__(
         self,
         page: ft.Page,
-        project_repo: ProjectRepository
+        project_repo: ProjectService
     ):
         super().__init__(page)
 
@@ -97,7 +97,7 @@ class ProjectScreen(BaseScreen):
         project = store.current_project
         if project is None: return
 
-        self._project_repo.delete(project.uuid)
+        self._project_repo.delete_project(project.uuid)
         store.current_project = None
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()

@@ -5,7 +5,7 @@ from sys import stdout
 
 from .db import Database
 from .repositories import FileRepository, ProjectRepository
-from .services import FileService
+from .services import FileService, ProjectService
 from .ui import Interface
 
 
@@ -25,8 +25,12 @@ class App:
         self._file_repo = FileRepository(self._engine)
 
         self._file_service = FileService(self._file_repo, Path('assets/'))
+        self._project_service = ProjectService(
+            self._project_repo,
+            self._file_service
+        )
 
-        self._interface = Interface(self._project_repo)
+        self._interface = Interface(self._project_service, self._file_service)
 
     def run(self):
         '''Запуск приложения.'''

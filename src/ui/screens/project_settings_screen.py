@@ -3,7 +3,7 @@ from datetime import timedelta
 import flet as ft
 
 from ...constants import ColorPalette, ProjectStatus, RouterPaths
-from ...repositories import ProjectRepository
+from ...services import ProjectService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
@@ -15,11 +15,11 @@ class ProjectSettingsScreen(BaseScreen):
     def __init__(
         self,
         page: ft.Page,
-        project_repo: ProjectRepository
+        project_service: ProjectService
     ):
         super().__init__(page)
 
-        self._project_repo = project_repo
+        self._project_service = project_service
 
     def build(self) -> ft.Control:
         '''Сборка интерфейса экрана.'''
@@ -203,7 +203,7 @@ class ProjectSettingsScreen(BaseScreen):
         project.start_date = self._start_date
         project.end_date = self._end_date
 
-        self._project_repo.update(project)
+        self._project_service.update_project(project)
         self._page.navigate(RouterPaths.PROJECT_SCREEN)
 
     def _button_switch(self, _):

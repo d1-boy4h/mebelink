@@ -2,7 +2,7 @@ import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
 from ...models import Project
-from ...repositories import ProjectRepository
+from ...services import ProjectService
 from ..components import Header, ProjectElement
 from ..store import store
 from .base_screen import BaseScreen
@@ -14,10 +14,10 @@ class HomeScreen(BaseScreen):
     def __init__(
             self,
             page: ft.Page,
-            project_repo: ProjectRepository,
+            project_service: ProjectService,
         ):
         super().__init__(page)
-        self._project_repo = project_repo
+        self._project_service = project_service
 
     def build(self) -> ft.Control:
         '''Сборка интерфейса экрана.'''
@@ -58,7 +58,7 @@ class HomeScreen(BaseScreen):
     def _get_projects(self) -> list[ft.Control]:
         '''Получение списка проектов.'''
 
-        projects = self._project_repo.get_all()
+        projects = self._project_service.get_all()
 
         elements = []
         for project in projects:
@@ -115,7 +115,7 @@ class HomeScreen(BaseScreen):
     def _create_project(self, title: str):
         '''Создание проекта в модальном окне.'''
 
-        new_project = self._project_repo.create_project(title)
+        new_project = self._project_service.create_project(title)
         self._go_to_project_screen(new_project)
 
         self._text_input.value = ''

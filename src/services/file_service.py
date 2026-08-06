@@ -38,7 +38,7 @@ class FileService:
 
         return file
 
-    def get_project_files(self, project_uuid: UUID) -> list[File]:
+    def get_all(self, project_uuid: UUID) -> list[File]:
         '''Получение всех файлов проекта.'''
         return self._file_repo.get_by_project(project_uuid)
 

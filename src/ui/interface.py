@@ -2,15 +2,20 @@ import flet as ft
 from flet import run as run_flet_engine
 
 from ..constants import ColorPalette, RouterPaths
-from ..repositories import ProjectRepository
+from ..services import FileService, ProjectService
 from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
 
 
 class Interface:
     '''Корневой класс интерфейса.'''
 
-    def __init__(self, project_repo: ProjectRepository):
-        self._project_repo = project_repo
+    def __init__(
+        self,
+        project_service: ProjectService,
+        file_service: FileService
+    ):
+        self._project_service = project_service
+        self._file_service = file_service
 
     def _get_view(self, route: str) -> ft.View:
         '''Возвращает список страниц для роутера.'''
@@ -69,7 +74,7 @@ class Interface:
         self._page = page
         self._current_route = RouterPaths.HOME_SCREEN
 
-        default_screen_params = page, self._project_repo
+        default_screen_params = (page, self._project_service)
         self._screens: dict[str, BaseScreen] = {
             RouterPaths.HOME_SCREEN: HomeScreen(*default_screen_params),
             RouterPaths.PROJECT_SCREEN: ProjectScreen(*default_screen_params),
