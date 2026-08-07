@@ -52,7 +52,7 @@ class Interface:
                 if e.route == RouterPaths.PROJECT_SCREEN:
                     project_screen = self._screens[RouterPaths.PROJECT_SCREEN]
                     project_screen.update_blocks() # type: ignore
-                
+
                 break
 
         else:
