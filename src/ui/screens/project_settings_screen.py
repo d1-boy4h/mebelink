@@ -241,7 +241,7 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if new_date < self._start_date:
-                self._show_error_notif('Ошибка: дата завершения проекта должна быть позже его начала!')
+                self._show_error_notif('Дата завершения проекта должна быть позже его начала!')
                 self._end_date_picker.value = self._end_date
 
             self._end_date = new_date

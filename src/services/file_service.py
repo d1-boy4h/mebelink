@@ -28,15 +28,17 @@ class FileService:
 
         project_dir = self._get_project_dir(project_uuid)
         file_path = project_dir / name
+
+        if file_path.exists():
+            raise ValueError('Данный файл уже существует')
+
         file_path.write_bytes(content)
 
-        file = File(
+        return self._file_repo.save(File(
             project_uuid=project_uuid,
             filename=name,
             path=str(file_path)
-        )
-
-        return file
+        ))
 
     def get_all(self, project_uuid: UUID) -> list[File]:
         '''Получение всех файлов проекта.'''

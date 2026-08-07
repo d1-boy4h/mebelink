@@ -36,7 +36,7 @@ class FileRepository:
             uploaded_date=file_db.uploaded_date
         )
 
-    def _save(self, file: File) -> File:
+    def save(self, file: File) -> File:
         '''Сохранение файла в базе данных.'''
 
         file_db = self._to_orm(file)

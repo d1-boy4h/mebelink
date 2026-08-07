@@ -1,7 +1,7 @@
 import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
-from ...services import ProjectService
+from ...services import FileService, ProjectService
 from ..components import GalleryBlock, Header, InfoBlock
 from ..store import store
 from .base_screen import BaseScreen
@@ -13,11 +13,13 @@ class ProjectScreen(BaseScreen):
     def __init__(
         self,
         page: ft.Page,
-        project_repo: ProjectService
+        project_service: ProjectService,
+        file_service: FileService
     ):
         super().__init__(page)
 
-        self._project_repo = project_repo
+        self._project_service = project_service
+        self._file_service = file_service
 
     def build(self) -> ft.Control:
         '''Сборка интерфейса экрана.'''
@@ -30,7 +32,7 @@ class ProjectScreen(BaseScreen):
         header = self._header_component.build()
 
         self._info_block = InfoBlock(project, self._page)
-        self._gallery_block = GalleryBlock()
+        self._gallery_block = GalleryBlock(self._page, self._file_service)
 
         delete_button = ft.Button(
             'Удалить проект',
@@ -97,7 +99,7 @@ class ProjectScreen(BaseScreen):
         project = store.current_project
         if project is None: return
 
-        self._project_repo.delete_project(project.uuid)
+        self._project_service.delete_project(project.uuid)
         store.current_project = None
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()

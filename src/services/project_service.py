@@ -1,4 +1,3 @@
-import logging
 from uuid import UUID
 
 from ..models import Project
@@ -16,7 +15,6 @@ class ProjectService:
     ):
         self._project_repo = project_repo
         self._file_service = file_service
-        self._logger = logging.getLogger(__name__)
 
     def create_project(self, title: str) -> Project:
         '''Создание проекта.'''
