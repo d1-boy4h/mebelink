@@ -61,7 +61,7 @@ class Interface:
 
         self._page.update()
 
-    def _on_view_pop(self, *args):
+    def _on_view_pop(self, _):
         '''Обработка кнопки "Назад" на смартфоне.'''
 
         view_list = self._page.views
@@ -94,6 +94,13 @@ class Interface:
         page.theme = ft.Theme(
             system_overlay_style=ft.SystemOverlayStyle(
                 status_bar_color=ColorPalette.MAIN,
+            ),
+            page_transitions=ft.PageTransitionsTheme(
+                android=ft.PageTransitionTheme.CUPERTINO,
+                ios=ft.PageTransitionTheme.CUPERTINO,
+                windows=ft.PageTransitionTheme.CUPERTINO,
+                macos=ft.PageTransitionTheme.CUPERTINO,
+                linux=ft.PageTransitionTheme.CUPERTINO
             )
         )
 

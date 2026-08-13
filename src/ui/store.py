@@ -1,4 +1,4 @@
-from ..models import Project
+from ..models import File, Project
 
 
 class Store:
@@ -6,5 +6,6 @@ class Store:
 
     def __init__(self) -> None:
         self.current_project: Project | None = None
+        self.current_files: list[File] | None = None
 
 store = Store()

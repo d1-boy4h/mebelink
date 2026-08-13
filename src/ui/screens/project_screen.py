@@ -101,6 +101,7 @@ class ProjectScreen(BaseScreen):
 
         self._project_service.delete_project(project.uuid)
         store.current_project = None
+        store.current_files = None
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()
 

@@ -73,6 +73,7 @@ class Header:
         '''Переход назад на домашний экран.'''
 
         store.current_project = None
+        store.current_files = None
         self._page.navigate(RouterPaths.HOME_SCREEN)
 
     def refresh_title(self):

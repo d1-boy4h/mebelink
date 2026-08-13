@@ -1,5 +1,7 @@
 import flet as ft
 
+from src.ui.components.image_viewer import ImageViewer
+
 from ...constants import ColorPalette
 from ...services import FileService
 from ..store import store
@@ -10,7 +12,9 @@ class GalleryBlock:
 
     def __init__(self, page: ft.Page, file_service: FileService):
         self._page = page
+
         self._file_service = file_service
+        self._viewer = ImageViewer(page)
 
     def build(self) -> ft.Control:
         '''Построение интерфейса блока.'''
@@ -45,10 +49,17 @@ class GalleryBlock:
             return
 
         files = self._file_service.get_all(store.current_project.uuid)
+        store.current_files = files[:]
+
         gallery_elements = []
         for file in files:
-            image = ft.Image(file.path)
-            gallery_elements.append(image)
+            image = ft.Image(file.path, fit=ft.BoxFit.FILL)
+            file_btn = ft.Container(
+                image,
+                border_radius=10,
+                on_click=lambda _, f=file: self._viewer.open(f)
+            )
+            gallery_elements.append(file_btn)
 
         gallery_elements.append(self._file_picker_btn)
         self._gallery.controls = gallery_elements
