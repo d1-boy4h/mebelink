@@ -1,10 +1,9 @@
 import flet as ft
 
-from src.ui.components.image_viewer import ImageViewer
-
 from ...constants import ColorPalette
 from ...services import FileService
 from ..store import store
+from .image_viewer import ImageViewer
 
 
 class GalleryBlock:

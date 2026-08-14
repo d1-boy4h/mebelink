@@ -69,7 +69,7 @@ class Header:
 
         return header
 
-    def _go_to_home_screen(self, *args):
+    def _go_to_home_screen(self, _):
         '''Переход назад на домашний экран.'''
 
         store.current_project = None

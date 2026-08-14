@@ -74,15 +74,13 @@ class Interface:
         self._page = page
         self._current_route = RouterPaths.HOME_SCREEN
 
-        default_screen_params = (page, self._project_service)
         self._screens: dict[str, BaseScreen] = {
-            RouterPaths.HOME_SCREEN: HomeScreen(*default_screen_params),
+            RouterPaths.HOME_SCREEN: HomeScreen(page, self._project_service),
             RouterPaths.PROJECT_SCREEN: ProjectScreen(
-                *default_screen_params,
-                self._file_service
+                page, self._project_service, self._file_service
             ),
             RouterPaths.PROJECT_SETTINGS_SCREEN: ProjectSettingsScreen(
-                *default_screen_params
+                page, self._project_service
             )
         }
 

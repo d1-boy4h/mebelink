@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import ClassVar, Literal
 
 import flet as ft
 
@@ -7,6 +7,12 @@ from ...models import File
 from ..store import store
 
 ImageSwipingDirType = Literal['left', 'right']
+
+class GestureLimiters:
+    '''Константы для обработки жестов.'''
+
+    SCALE_SPEED: ClassVar[int] = 10
+    OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.4
 
 class ImageViewer:
     '''Компонент просмотра фотографий проекта.'''
@@ -30,7 +36,7 @@ class ImageViewer:
     def open(self, file: File):
         '''Открытие полноэкранного просмотра.'''
 
-        self._close()
+        self._page.views[-1].can_pop = False
 
         self._offset = 0, 0
         self._scale = 1.0
@@ -86,6 +92,8 @@ class ImageViewer:
     def _close(self):
         '''Закрытие полноэкранного просмотра.'''
 
+        self._page.views[-1].can_pop = True
+
         if self._container and self._container in self._page.overlay:
             self._page.overlay.remove(self._container)
 
@@ -103,30 +111,28 @@ class ImageViewer:
         self._file_index is None:
             return
 
-        SCROLL_SPEED_LIMITER = 10
-
         if e.scale != 1.0:
             if e.scale > 1.0 and self._scale < 5:
-                self._scale += (e.scale - 1.0) / SCROLL_SPEED_LIMITER
+                self._scale += (e.scale - 1.0) / GestureLimiters.SCALE_SPEED
             elif e.scale < 1.0 and self._scale > 0.1:
-                self._scale -= (1.0 - e.scale) / SCROLL_SPEED_LIMITER
+                self._scale -= (1.0 - e.scale) / GestureLimiters.SCALE_SPEED
 
             self._image.scale = self._scale
 
         offset_x = self._offset[0] + e.focal_point_delta.x / self._width
         offset_y = 0.0
 
-        OFFSET_IMAGE_CHANGE_LIMIT = 0.4
-
         if self._scale > 1.0:
             offset_y = self._offset[1] + e.focal_point_delta.y / self._height
         else:
-            if self._offset[0] < -OFFSET_IMAGE_CHANGE_LIMIT: # Свайп влево
+            # Свайп влево
+            if self._offset[0] < -GestureLimiters.OFFSET_IMAGE_CHANGE:
                 self._image_swiping_dir = 'left'
-                self._image.opacity = 0.7
-            elif self._offset[0] > OFFSET_IMAGE_CHANGE_LIMIT:  # Свайп вправо
+                self._image.opacity = 0.6
+            # Свайп вправо
+            elif self._offset[0] > GestureLimiters.OFFSET_IMAGE_CHANGE:
                 self._image_swiping_dir = 'right'
-                self._image.opacity = 0.7
+                self._image.opacity = 0.6
             else:
                 self._image_swiping_dir = None
                 self._image.opacity = 1

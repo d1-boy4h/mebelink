@@ -7,3 +7,4 @@ class RouterPaths(StrEnum):
     HOME_SCREEN    = '/'
     PROJECT_SCREEN = '/project'
     PROJECT_SETTINGS_SCREEN = '/project-settings'
+    GALLERY = '/gallery'
