@@ -19,7 +19,7 @@ class HomeScreen(BaseScreen):
         super().__init__(page)
         self._project_service = project_service
 
-    def build(self) -> ft.Control:
+    def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
         header_component = Header(self._page, self._page.route)
@@ -53,7 +53,9 @@ class HomeScreen(BaseScreen):
             on_click=self._show_create_project_modal
         )
 
-        return ft.Stack([wrapper, create_project_button])
+        screen_content = ft.Stack([wrapper, create_project_button])
+        appbar_wrapper = ft.SafeArea(screen_content, expand=True)
+        return ft.View([appbar_wrapper], route, padding=0)
 
     def _get_projects(self) -> list[ft.Control]:
         '''Получение списка проектов.'''

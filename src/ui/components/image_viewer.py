@@ -1,9 +1,11 @@
+from collections.abc import Callable
 from typing import ClassVar, Literal
 
 import flet as ft
 
 from ...constants import ColorPalette
 from ...models import File
+from ...services import FileService
 from ..store import store
 
 ImageSwipingDirType = Literal['left', 'right']
@@ -11,14 +13,20 @@ ImageSwipingDirType = Literal['left', 'right']
 class GestureLimiters:
     '''Константы для обработки жестов.'''
 
-    SCALE_SPEED: ClassVar[int] = 10
-    OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.4
+    SCALE_SPEED: ClassVar[int] = 5
+    OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.2
 
 class ImageViewer:
     '''Компонент просмотра фотографий проекта.'''
 
-    def __init__(self, page: ft.Page):
+    def __init__(
+            self,
+            page: ft.Page,
+            file_service: FileService,
+            refresh_callback: Callable):
         self._page = page
+        self._file_service = file_service
+        self._refresh_callback = refresh_callback
 
         self._width = page.width if page.width is not None else 1
         self._height = page.height if page.height is not None else 1
@@ -29,7 +37,7 @@ class ImageViewer:
         self._offset: tuple[float, float] | None = None
         self._scale: float | None = None
         self._image: ft.Image | None = None
-        self._container: ft.Container | None = None
+        self._container: ft.SafeArea | None = None
 
         self._image_swiping_dir: ImageSwipingDirType | None = None
 
@@ -61,7 +69,7 @@ class ImageViewer:
             on_scale_end=self._on_scale_end
         )
 
-        self._container = ft.Container(
+        container_content = ft.Container(
             content=ft.Stack([
                 ft.Container(
                     gesture_detector,
@@ -79,7 +87,7 @@ class ImageViewer:
                     ft.Icons.DELETE,
                     icon_color=ColorPalette.RED,
                     icon_size=32,
-                    on_click=lambda _: self._close(),
+                    on_click=self._show_delete_file_modal,
                     right=0,
                     bottom=0,
                     margin=ft.Margin.all(10)
@@ -87,6 +95,7 @@ class ImageViewer:
             ], expand=True)
         )
 
+        self._container = ft.SafeArea(container_content, expand=True)
         self._page.overlay.append(self._container)
 
     def _close(self):
@@ -125,11 +134,9 @@ class ImageViewer:
         if self._scale > 1.0:
             offset_y = self._offset[1] + e.focal_point_delta.y / self._height
         else:
-            # Свайп влево
             if self._offset[0] < -GestureLimiters.OFFSET_IMAGE_CHANGE:
                 self._image_swiping_dir = 'left'
                 self._image.opacity = 0.6
-            # Свайп вправо
             elif self._offset[0] > GestureLimiters.OFFSET_IMAGE_CHANGE:
                 self._image_swiping_dir = 'right'
                 self._image.opacity = 0.6
@@ -140,7 +147,7 @@ class ImageViewer:
         self._offset = (offset_x, offset_y)
         self._image.offset = self._offset
 
-    def _on_scale_end(self, _):
+    def _on_scale_end(self, _ = None):
         '''Перехватчик жестов после их завершения.'''
 
         if self._image is None or \
@@ -180,3 +187,43 @@ class ImageViewer:
 
         self._image.src = self._files[self._file_index].path
         self._image.offset = self._offset = (0, 0)
+
+    def _show_delete_file_modal(self, _):
+        '''Отображение модального окна подтверждения удаления изображения.'''
+
+        accept_button = ft.Button(
+            'Да, удалить',
+            on_click=self._on_file_delete,
+            color='#fff',
+            bgcolor=ColorPalette.RED,
+            width=float('inf'),
+            style=ft.ButtonStyle(
+                text_style=ft.TextStyle(size=16),
+                padding=ft.Padding(20, 15, 20, 15)
+            )
+        )
+
+        modal = ft.AlertDialog(
+            title='Вы уверены?',
+            title_text_style=ft.TextStyle(size=20, color='#000'),
+            shape=ft.RoundedRectangleBorder(radius=5),
+            actions=[accept_button],
+            bgcolor='#fff'
+        )
+
+        self._page.show_dialog(modal)
+
+    def _on_file_delete(self, _):
+        '''Удаление проекта.'''
+
+        if self._files is None or self._file_index is None:
+            return
+
+        file = self._files[self._file_index]
+        if file.id is not None:
+            self._file_service.delete_file(file.id)
+            self._refresh_callback()
+            self._page.pop_dialog()
+            self._close()
+
+            self._page.update()

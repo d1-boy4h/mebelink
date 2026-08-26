@@ -11,9 +11,9 @@ class GalleryBlock:
 
     def __init__(self, page: ft.Page, file_service: FileService):
         self._page = page
-
         self._file_service = file_service
-        self._viewer = ImageViewer(page)
+
+        self._viewer = ImageViewer(page, file_service, self.refresh)
 
     def build(self) -> ft.Control:
         '''Построение интерфейса блока.'''

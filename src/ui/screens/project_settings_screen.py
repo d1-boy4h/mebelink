@@ -21,7 +21,7 @@ class ProjectSettingsScreen(BaseScreen):
 
         self._project_service = project_service
 
-    def build(self) -> ft.Control:
+    def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
         if store.current_project is None:
@@ -165,10 +165,9 @@ class ProjectSettingsScreen(BaseScreen):
             expand=True
         )
 
-        return ft.Column(
-            [header, body],
-            spacing=0
-        )
+        screen_content = ft.Column([header, body], spacing=0)
+        appbar_wrapper = ft.SafeArea(screen_content, expand=True)
+        return ft.View([appbar_wrapper], route, padding=0)
 
     def _get_wrapper(
         self, content: ft.Control, icon: ft.IconData

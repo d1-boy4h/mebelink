@@ -21,7 +21,7 @@ class ProjectScreen(BaseScreen):
         self._project_service = project_service
         self._file_service = file_service
 
-    def build(self) -> ft.Control:
+    def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
         project = store.current_project
@@ -38,7 +38,7 @@ class ProjectScreen(BaseScreen):
             'Удалить проект',
             color='#fff',
             bgcolor=ColorPalette.RED,
-            on_click=self._show_create_project_modal,
+            on_click=self._show_delete_project_modal,
             margin=ft.Margin.only(top=10),
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=10),
@@ -63,12 +63,11 @@ class ProjectScreen(BaseScreen):
             expand=True
         )
 
-        return ft.Column(
-            [header, body],
-            spacing=0
-        )
+        screen_content = ft.Column([header, body], spacing=0)
+        appbar_wrapper = ft.SafeArea(screen_content, expand=True)
+        return ft.View([appbar_wrapper], route, padding=0)
 
-    def _show_create_project_modal(self, _):
+    def _show_delete_project_modal(self, _):
         '''Отображение модального окна подтверждения удаления проекта.'''
 
         accept_button = ft.Button(

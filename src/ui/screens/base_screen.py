@@ -10,5 +10,5 @@ class BaseScreen(ABC):
         self._page = page
 
     @abstractmethod
-    def build(self) -> ft.Control:
+    def build(self, route: str) -> ft.View:
         '''Постройка интерфейса экрана.'''

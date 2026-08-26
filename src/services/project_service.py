@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from ..constants import ProjectStatus
 from ..models import Project
 from ..repositories import ProjectRepository
 from ..services import FileService
@@ -26,7 +27,13 @@ class ProjectService:
 
     def get_all(self) -> list[Project]:
         '''Получение всех проектов.'''
-        return self._project_repo.get_all()
+
+        projects = self._project_repo.get_all()
+
+        # TODO: Пока временная сортировка, потом переделать в полноценную
+        projects.sort(key=lambda p: p.status == ProjectStatus.COMPLETED)
+
+        return projects
 
     def update_project(self, project: Project) -> Project:
         '''Обновление данных проекта.'''

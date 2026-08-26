@@ -4,6 +4,7 @@ __pycache__/
 
 build/
 logs/
-assets/
+assets/*
+!assets/icon_android.png
 
 data.db

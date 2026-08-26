@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from sys import stdout
 
@@ -14,6 +14,7 @@ class App:
 
     def __init__(self, is_debug: bool):
         self._setup_logger(is_debug)
+        self._clean_old_logs(days=7)
 
         self._logger = logging.getLogger('App')
         self._logger.info('Запус клиента...')
@@ -62,3 +63,21 @@ class App:
             level=logging.INFO,
             handlers=handlers_list
         )
+
+    def _clean_old_logs(self, days: int = 7):
+        '''Удаление логов старше указанного количества дней.'''
+
+        logs_dir = Path('logs/')
+        if not logs_dir.exists():
+            return
+
+        cutoff_date = date.today() - timedelta(days=days)  # noqa: DTZ011
+        for log_file in logs_dir.glob('*.log'):
+            try:
+                file_date_str = log_file.stem
+                file_date = date.fromisoformat(file_date_str)
+                if file_date < cutoff_date:
+                    log_file.unlink()
+                    self._logger.info(f'Удалён старый лог: {log_file.name}')
+            except (ValueError, OSError):
+                continue

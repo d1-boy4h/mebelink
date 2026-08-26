@@ -15,7 +15,7 @@ class Header:
         '''Сборка интерфейса шапки.'''
 
         self._header_title = ft.Text(
-            value='MebeLink',
+            value='МебеЛинк',
             color='#fff',
             size=32,
             weight=ft.FontWeight.BOLD,

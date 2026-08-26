@@ -17,18 +17,14 @@ class Interface:
         self._project_service = project_service
         self._file_service = file_service
 
-    def _get_view(self, route: str) -> ft.View:
-        '''Возвращает список страниц для роутера.'''
+    def _get_screen(self, route: str) -> ft.View:
+        '''Получение компонента страницы для навигации из пути.'''
 
         screen = self._screens.get(route)
         if screen is None:
             screen = self._screens[RouterPaths.HOME_SCREEN]
 
-        screen_content = screen.build()
-        safe_screen = ft.SafeArea(screen_content, expand=True)
-        view = ft.View([safe_screen], route, padding=0)
-
-        return view
+        return screen.build(route)
 
     def _on_route_change(self, e: ft.RouteChangeEvent):
         '''Обработка навигации по страницам (page.navigate).'''
@@ -56,7 +52,7 @@ class Interface:
                 break
 
         else:
-            view = self._get_view(e.route)
+            view = self._get_screen(e.route)
             self._page.views.append(view)
 
         self._page.update()
@@ -106,7 +102,7 @@ class Interface:
         page.on_route_change = self._on_route_change
         page.on_view_pop = self._on_view_pop
 
-        page.views.append(self._get_view(self._current_route))
+        page.views.append(self._get_screen(self._current_route))
 
     def run(self):
         '''Обёртка для функции run из Flet для инкапсуляции.'''

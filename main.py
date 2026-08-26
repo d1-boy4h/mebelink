@@ -1,8 +1,4 @@
-import argparse
-import subprocess
 import sys
-
-from rich import print
 
 from src import App
 
@@ -11,37 +7,66 @@ __author__ = 'd1_boy4h'
 if __name__ == '__main__':
     is_debug = False
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-d', '--debug',
-        action='store_true',
-        help='debug mode with mypy & pytest'
-    )
+    if len(sys.argv) > 0:
+        import argparse
+        import subprocess
 
-    args = parser.parse_args()
-    if getattr(args, 'debug', False):
-        is_debug = True
-        commands = [
-            (['mypy', '.',], 'Проверка типов mypy'),
-            (['ruff', 'check',], 'Линтинг и форматинг Ruff'),
-            (['pytest', '-v'], 'unit-тестирование')
-        ]
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            '-d', '--debug',
+            action='store_true',
+            help='debug mode with mypy, ruff and pytest checks'
+        )
+        parser.add_argument(
+            '-b', '--build',
+            action='store_true',
+            help='build app to apk for android'
+        )
 
-        for cmd, desc in commands:
-            print(f':: [bold blue]{desc}...[/]')
-            code = subprocess.run(cmd, check=False).returncode
-            if code == 5: continue # Игнорирование ошибки об отсутствии тестов
-            if code >= 1:
-                sys.exit(1)
+        args = parser.parse_args()
+
+        if getattr(args, 'build', False):
+            subprocess.run(['flet', 'build', 'apk'], check=False)
+            sys.exit()
+
+        elif getattr(args, 'debug', False):
+            from rich import print as rich_print
+
+            commands = [
+                (['mypy', '.',], 'Проверка типов mypy'),
+                (['ruff', 'check',], 'Линтинг и форматинг Ruff'),
+
+                # TODO: Расписать тесты остальных репозиториев
+                # (['pytest', '-v'], 'unit-тестирование')
+            ]
+
+            for cmd, desc in commands:
+                rich_print(f':: [bold blue]{desc}...[/]')
+                process = subprocess.run(cmd, check=False)
+                if process.returncode == 5: continue # Код отсутствия тестов
+                elif process.returncode >= 1:
+                    sys.exit(1)
 
     app = App(is_debug)
     app.run()
 
 # TODO-лист
 
-# Добавить удаление файлов
+#* Тудушки (бэк)
+# Модель тудушки (Разделы для задач: Цех, Монтаж, Другое)
+# Репозиторий тудушки
+# Сервис тудушки
 
-# Тудушки
+#* Тудушки (фронт)
+# Переделать экран проекта, чтобы он вмещал экран тудушек и экран настроек
+# Написать фронт меню тудушек
+# Написать фронт разделов тудушек (фильтрация)
+# Написать фронт создания тудушки
+# Написать фронт удаления тудушки
 
-# Сделать авто удаление логов по дням и по количеству строк
-# Закомментить дебаг-систему в этом файле
+#* Релизные штрихи
+# Придумать как разделить debug и release редакции
+# Оптимизировать размер apk
+# Решить вопрос с сохранением БД при обновлении приложения
+# Сделать автоудаление логов по дням и по количеству строк
+# Сделать иконку

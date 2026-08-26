@@ -1,6 +1,6 @@
 [project]
 name = "mebelink"
-version = "0.1"
+version = "1.0"
 description = "Mobile app for furniture management"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -27,3 +27,20 @@ exclude = ["build/"]
 
 [tool.ruff.lint]
 extend-select = ["W293"]
+
+[tool.flet]
+product = 'МебеЛинк'
+splash.android = false
+app.exclude = [
+    ".mypy_cache",
+    ".pytest_cache",
+    ".venv",
+    ".git",
+    "logs",
+    "tests",
+    ".gitignore",
+    ".python-version",
+    "data.db",
+    # "pyproject.toml",
+    # "uv.lock"
+]
