@@ -3,7 +3,8 @@ from uuid import UUID
 from ..constants import ProjectStatus
 from ..models import Project
 from ..repositories import ProjectRepository
-from ..services import FileService
+from .file_service import FileService
+from .task_tag_service import TaskTagService
 
 
 class ProjectService:
@@ -12,10 +13,12 @@ class ProjectService:
     def __init__(
         self,
         project_repo: ProjectRepository,
-        file_service: FileService
+        file_service: FileService,
+        tag_service: TaskTagService
     ):
         self._project_repo = project_repo
         self._file_service = file_service
+        self._tag_service = tag_service
 
     def create_project(self, title: str) -> Project:
         '''Создание проекта.'''
@@ -44,8 +47,9 @@ class ProjectService:
 
         project = self._project_repo.get_by_uuid(project_uuid)
         if not project:
-            raise ValueError(f'Проект \'{project_uuid!s}\' не найден')
+            raise ValueError(f'Проект c uuid \'{project_uuid!s}\' не найден')
 
         if project is not None:
             self._file_service.delete_project_files(project_uuid)
+            self._tag_service.delete_project_tags(project_uuid)
             return self._project_repo.delete(project_uuid)

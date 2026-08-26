@@ -13,7 +13,7 @@ class FileRepository:
 
     def __init__(self, engine: Engine):
         self._engine = engine
-        self._logger = logging.getLogger('FileRepository')
+        self._logger = logging.getLogger(__name__)
 
     def _to_orm(self, file: File) -> FileDB:
         '''Преобразование модели из Pydantic в ORM.'''
@@ -98,7 +98,7 @@ class FileRepository:
             file_db = session.get(FileDB, file.id)
 
             if not file_db:
-                raise ValueError(f'Файл \'{file.id}\' не найден')
+                raise ValueError(f'Файл \'{file.filename}\' не найден')
 
             file_db.project_uuid = str(file.project_uuid)
             file_db.filename = file.filename
@@ -107,14 +107,14 @@ class FileRepository:
 
             try:
                 session.commit()
-                self._logger.info(f'Файл \'{file.id}\' обновлён')
+                self._logger.info(f'Файл \'{file.filename}\' обновлён')
 
                 return self._to_pydantic(file_db)
 
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
-                    f'Ошибка обновления файла \'{file.id}\': {error}'
+                    f'Ошибка обновления файла \'{file.filename}\': {error}'
                 )
 
                 raise RuntimeError(f'Ошибка обновления файла: {error}')

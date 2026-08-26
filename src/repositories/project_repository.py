@@ -65,7 +65,7 @@ class ProjectRepository:
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
-                    f'Ошибка сохранения проекта \'{project.uuid!s}\': {error}'
+                    f'Ошибка сохранения проекта \'{project.title}\': {error}'
                 )
 
                 raise RuntimeError(f'Ошибка сохранения проекта: {error}')
@@ -104,7 +104,7 @@ class ProjectRepository:
             project_db = session.get(ProjectDB, str(project.uuid))
 
             if not project_db:
-                raise ValueError(f'Проект \'{project.uuid!s}\' не найден')
+                raise ValueError(f'Проект \'{project.title}\' не найден')
 
             project_db.title = project.title
             project_db.status = project.status

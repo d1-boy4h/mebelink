@@ -7,7 +7,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from ..constants import ProjectStatus
 from ..db import Base
-from .file import File
 
 
 class Project(BaseModel):
@@ -22,7 +21,6 @@ class Project(BaseModel):
     end_date: date | None = None
     address: str | None = None
     phone: str | None = None
-    files: list[File] = Field(default_factory=list)
 
     @field_validator('title')
     @classmethod

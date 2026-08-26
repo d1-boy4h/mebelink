@@ -4,8 +4,13 @@ from pathlib import Path
 from sys import stdout
 
 from .db import Database
-from .repositories import FileRepository, ProjectRepository, TaskTagRepository
-from .services import FileService, ProjectService, TaskTagService
+from .repositories import (
+    FileRepository,
+    ProjectRepository,
+    TaskRepository,
+    TaskTagRepository,
+)
+from .services import FileService, ProjectService, TaskService, TaskTagService
 from .ui import Interface
 
 
@@ -22,21 +27,27 @@ class App:
         self._db = Database()
         self._engine = self._db.engine
 
-        self._project_repo = ProjectRepository(self._engine)
         self._file_repo = FileRepository(self._engine)
+        self._task_repo = TaskRepository(self._engine)
         self._task_tag_repo = TaskTagRepository(self._engine)
+        self._project_repo = ProjectRepository(self._engine)
 
         self._file_service = FileService(self._file_repo, Path('assets/'))
+        self._task_service = TaskService(self._task_repo)
+        self._task_tag_service = TaskTagService(
+            self._task_tag_repo, self._task_service
+        )
         self._project_service = ProjectService(
             self._project_repo,
-            self._file_service
+            self._file_service,
+            self._task_tag_service
         )
-        self._task_tag_service = TaskTagService(self._task_tag_repo)
 
         self._interface = Interface(
             self._project_service,
             self._file_service,
-            self._task_tag_service
+            self._task_tag_service,
+            self._task_service
         )
 
     def run(self):

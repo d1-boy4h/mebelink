@@ -117,6 +117,19 @@ class HomeScreen(BaseScreen):
     def _create_project(self, title: str):
         '''Создание проекта в модальном окне.'''
 
+        # Пасхал очка
+        valid_title = title.lower().strip()
+        if valid_title == 'сова' or valid_title == 'совы':
+            pashalka = '\n' * 10 + '🦉 UwU 🦉' + '\n' * 10
+            self._page.pop_dialog()
+            self._page.show_dialog(ft.SnackBar(
+                content=ft.Text(pashalka, align=ft.Alignment.CENTER),
+                behavior=ft.SnackBarBehavior.FLOATING,
+                bgcolor=ColorPalette.GREEN
+            ))
+            self._text_input.value = ''
+            return
+
         new_project = self._project_service.create_project(title)
         self._go_to_project_screen(new_project)
 

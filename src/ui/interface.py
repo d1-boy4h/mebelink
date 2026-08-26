@@ -2,7 +2,7 @@ import flet as ft
 from flet import run as run_flet_engine
 
 from ..constants import ColorPalette, RouterPaths
-from ..services import FileService, ProjectService, TaskTagService
+from ..services import FileService, ProjectService, TaskService, TaskTagService
 from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
 
 
@@ -13,11 +13,13 @@ class Interface:
         self,
         project_service: ProjectService,
         file_service: FileService,
-        task_tag_service: TaskTagService
+        task_tag_service: TaskTagService,
+        task_service: TaskService
     ):
         self._project_service = project_service
         self._file_service = file_service
         self._task_tag_service = task_tag_service
+        self._task_service = task_service
 
     def _get_screen(self, route: str) -> ft.View:
         '''Получение компонента страницы для навигации из пути.'''

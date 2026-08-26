@@ -1,4 +1,5 @@
 import logging
+from uuid import UUID
 
 from sqlalchemy import Engine, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,13 +17,19 @@ class TaskTagRepository:
 
     def _to_orm(self, tag: TaskTag) -> TaskTagDB:
         '''Преобразование модели из Pydantic в ORM.'''
-        return TaskTagDB(title=tag.title, is_open=tag.is_open)
+
+        return TaskTagDB(
+            title=tag.title,
+            project_uuid=str(tag.project_uuid),
+            is_open=tag.is_open
+        )
 
     def _to_pydantic(self, tag_db: TaskTagDB) -> TaskTag:
         '''Преобразование модели из ORM в Pydantic.'''
 
         return TaskTag(
             title=tag_db.title,
+            project_uuid=UUID(tag_db.project_uuid),
             is_open=tag_db.is_open
         )
 
@@ -52,28 +59,34 @@ class TaskTagRepository:
 
                 raise RuntimeError(f'Ошибка сохранения раздела: {error}')
 
-    def is_exist(self, title: str) -> bool:
-        '''Существует ли раздел с таким названием.'''
+    def get_by_id(self, tag_id: int) -> TaskTag | None:
+        '''Получение раздела по идентификатору.'''
 
         with Session(self._engine) as session:
-            tag_db = session.execute(
-                select(TaskTagDB).where(TaskTagDB.title == title)
-            ).scalar_one_or_none()
+            tag_db = session.get(TaskTagDB, tag_id)
 
-            return tag_db is not None
+            if tag_db:
+                self._logger.info(
+                    f'Раздел \'{tag_db.title}\' получен из базы данных'
+                )
+                return self._to_pydantic(tag_db)
 
-    def get_all(self) -> list[TaskTag]:
-        '''Получение всех разделов.'''
+            return None
+
+    def get_by_project(self, project_uuid: UUID) -> list[TaskTag]:
+        '''Получение всех разделов проекта.'''
 
         with Session(self._engine) as session:
-            tags_db = session.execute(select(TaskTagDB)).scalars().all()
+            tags_db = session.execute(
+                select(TaskTagDB).where(TaskTagDB.project_uuid == str(project_uuid))
+            ).scalars().all()
 
             if len(tags_db):
                 self._logger.info(
                     f'Разделов получено из базы данных: {len(tags_db)}'
                 )
 
-            return [self._to_pydantic(tag_db) for tag_db in tags_db]
+            return [self._to_pydantic(tag) for tag in tags_db]
 
     def update(self, tag: TaskTag) -> TaskTag:
         '''Обновление данных раздела.'''
@@ -85,6 +98,7 @@ class TaskTagRepository:
                 raise ValueError(f'Раздел \'{tag.title}\' не найден')
 
             tag_db.title = tag.title
+            tag_db.project_uuid = str(tag.project_uuid)
             tag_db.is_open = tag.is_open
 
             try:
@@ -108,15 +122,15 @@ class TaskTagRepository:
             tag_db = session.get(TaskTagDB, tag_id)
             if not tag_db: return None
 
-            deleted_file = self._to_pydantic(tag_db)
+            deleted_tag = self._to_pydantic(tag_db)
 
             session.delete(tag_db)
 
             try:
                 session.commit()
-                self._logger.info(f'Раздел \'{tag_db.title}\' удалён')
+                self._logger.info(f'Раздел \'{deleted_tag.title}\' удалён')
 
-                return deleted_file
+                return deleted_tag
 
             except SQLAlchemyError as error:
                 session.rollback()

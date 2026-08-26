@@ -49,7 +49,7 @@ class FileService:
 
         file = self._file_repo.get_by_id(file_id)
         if not file:
-            raise ValueError(f'Файл \'{file_id}\' не найден')
+            raise ValueError(f'Файл c id \'{file_id}\' не найден')
 
         file_path = Path(file.path)
         if file_path.exists():
