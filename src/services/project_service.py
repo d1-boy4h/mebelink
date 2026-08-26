@@ -46,5 +46,6 @@ class ProjectService:
         if not project:
             raise ValueError(f'Проект \'{project_uuid!s}\' не найден')
 
-        self._file_service.delete_project_files(project_uuid)
-        return self._project_repo.delete(project_uuid)
+        if project is not None:
+            self._file_service.delete_project_files(project_uuid)
+            return self._project_repo.delete(project_uuid)
