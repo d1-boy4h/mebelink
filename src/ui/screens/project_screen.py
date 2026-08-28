@@ -2,9 +2,10 @@ import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
 from ...services import FileService, ProjectService
-from ..components import GalleryBlock, Header, InfoBlock
+from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
+from .project_screen_tabs import MainTab
 
 
 class ProjectScreen(BaseScreen):
@@ -30,42 +31,63 @@ class ProjectScreen(BaseScreen):
 
         self._header_component = Header(
             self._project.title,
-            on_back=self._back_to_home_screen_handler,
-            on_settings=lambda _: self._page.navigate(
-                RouterPaths.PROJECT_SETTINGS_SCREEN
-            )
+            on_back=self._back_to_home_screen_handler
         )
 
         header = self._header_component.build()
 
-        self._info_block = InfoBlock(self._project, self._page)
-        self._gallery_block = GalleryBlock(self._page, self._file_service)
-
-        delete_button = ft.Button(
-            'Удалить проект',
-            color='#fff',
-            bgcolor=ColorPalette.RED,
-            on_click=self._show_delete_project_modal,
-            margin=ft.Margin.only(top=10),
-            style=ft.ButtonStyle(
-                shape=ft.RoundedRectangleBorder(radius=10),
-                padding=ft.Padding.all(15)
-            )
-        )
-
-        body_content = ft.ListView(
-            [
-                self._info_block.build(),
-                self._gallery_block.build(),
-                delete_button
+        tab_bar = ft.TabBar(
+            tabs=[
+                ft.Tab(ft.Row([
+                    ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Главная')
+                ])),
+                ft.Tab(ft.Row([
+                    ft.Icon(ft.Icons.CHECKLIST), ft.Text('Задачи')
+                ])),
+                ft.Tab(ft.Row([
+                    ft.Icon(ft.Icons.SETTINGS), ft.Text('Настройки')
+                ]))
             ],
-            spacing=20
+            indicator_color=ColorPalette.MAIN,
+            label_color=ColorPalette.MAIN,
+            unselected_label_color=ColorPalette.GRAY,
         )
+
+        self._main_tab = MainTab(
+            self._page,
+            self._header_component,
+            self._project_service,
+            self._file_service
+        )
+
+        tab_bar_view = ft.TabBarView(
+            expand=True,
+            margin=ft.Margin.all(20),
+            controls=[
+                ft.Container(self._main_tab.build()),
+                ft.Container(
+                    content=ft.Text('Tasks content'),
+                ),
+                ft.Container(
+                    content=ft.Text('Settings content'),
+                ),
+            ],
+        )
+
+        tabs = ft.Tabs(
+            ft.Column(controls=[tab_bar, tab_bar_view]),
+            length=3,
+            expand=True
+        )
+
+        # body_content = ft.PageView(
+        #     [self._project_info_screen.build(), ft.Text('123')],
+        #     implicit_scrolling=True
+        # )
 
         body = ft.Container(
-            body_content,
+            tabs,
             bgcolor=ColorPalette.BACKGROUND,
-            padding=ft.Padding.all(20),
             width=float('inf'),
             expand=True
         )
@@ -73,31 +95,6 @@ class ProjectScreen(BaseScreen):
         screen_content = ft.Column([header, body], spacing=0)
         appbar_wrapper = ft.SafeArea(screen_content, expand=True)
         return ft.View([appbar_wrapper], route, padding=0)
-
-    def _show_delete_project_modal(self, _):
-        '''Отображение модального окна подтверждения удаления проекта.'''
-
-        accept_button = ft.Button(
-            'Да, удалить',
-            on_click=self._on_project_delete,
-            color='#fff',
-            bgcolor=ColorPalette.RED,
-            width=float('inf'),
-            style=ft.ButtonStyle(
-                text_style=ft.TextStyle(size=16),
-                padding=ft.Padding(20, 15, 20, 15)
-            )
-        )
-
-        modal = ft.AlertDialog(
-            title='Вы уверены?',
-            title_text_style=ft.TextStyle(size=20, color='#000'),
-            shape=ft.RoundedRectangleBorder(radius=5),
-            actions=[accept_button],
-            bgcolor='#fff'
-        )
-
-        self._page.show_dialog(modal)
 
     def _on_project_delete(self, _):
         '''Удаление проекта.'''
@@ -111,18 +108,18 @@ class ProjectScreen(BaseScreen):
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()
 
-    def update_blocks(self):
+    def update_project_info(self):
         '''Обновление информации о проекте.'''
 
         if self._project is None:
             return
 
         self._header_component.title = self._project.title
-        self._info_block.refresh_rows()
-        self._gallery_block.refresh()
+        self._main_tab.update_blocks()
 
     def _back_to_home_screen_handler(self, _):
         '''Коллбэк перехода на домашний экран для шапки.'''
+
         store.current_project = None
         store.current_files = None
         self._page.navigate(RouterPaths.HOME_SCREEN)

@@ -51,7 +51,7 @@ class Interface:
 
                 if e.route == RouterPaths.PROJECT_SCREEN:
                     project_screen = self._screens[RouterPaths.PROJECT_SCREEN]
-                    project_screen.update_blocks() # type: ignore
+                    project_screen.update_project_info() # type: ignore
 
                 break
 
@@ -84,7 +84,7 @@ class Interface:
             )
         }
 
-        page.title = 'MebeLink'
+        page.title = 'МебеЛинк'
         page.window.width = 360
         page.window.height = 660
         page.padding = 0
