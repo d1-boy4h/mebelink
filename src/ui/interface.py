@@ -3,7 +3,7 @@ from flet import run as run_flet_engine
 
 from ..constants import ColorPalette, RouterPaths
 from ..services import FileService, ProjectService, TaskService, TaskTagService
-from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
+from .screens import BaseScreen, HomeScreen, ProjectScreen
 
 
 class Interface:
@@ -78,9 +78,6 @@ class Interface:
             RouterPaths.HOME_SCREEN: HomeScreen(page, self._project_service),
             RouterPaths.PROJECT_SCREEN: ProjectScreen(
                 page, self._project_service, self._file_service
-            ),
-            RouterPaths.PROJECT_SETTINGS_SCREEN: ProjectSettingsScreen(
-                page, self._project_service
             )
         }
 

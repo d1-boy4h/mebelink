@@ -13,7 +13,7 @@ class FileService:
     def __init__(self, file_repo: FileRepository, storage_path: Path):
         self._file_repo = file_repo
         self._storage_path = storage_path
-        self._logger = logging.getLogger(__name__)
+        self._logger = logging.getLogger('FileService')
 
     def _get_project_dir(self, project_uuid: UUID) -> Path:
         '''Получение пути к папке проекта.'''

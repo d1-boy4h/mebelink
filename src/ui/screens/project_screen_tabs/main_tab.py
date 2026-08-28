@@ -2,7 +2,7 @@ import flet as ft
 
 from ....constants import ColorPalette, RouterPaths
 from ....services import FileService, ProjectService
-from ...components import GalleryBlock, Header, InfoBlock
+from ...components import GalleryBlock, InfoBlock
 from ...store import store
 
 
@@ -12,13 +12,11 @@ class MainTab:
     def __init__(
         self,
         page: ft.Page,
-        header: Header,
         project_service: ProjectService,
         file_service: FileService
     ):
         self._page = page
 
-        self._header = header
         self._project_service = project_service
         self._file_service = file_service
 

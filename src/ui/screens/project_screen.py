@@ -5,7 +5,7 @@ from ...services import FileService, ProjectService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
-from .project_screen_tabs import MainTab
+from .project_screen_tabs import MainTab, SettingsTab
 
 
 class ProjectScreen(BaseScreen):
@@ -55,22 +55,25 @@ class ProjectScreen(BaseScreen):
 
         self._main_tab = MainTab(
             self._page,
-            self._header_component,
             self._project_service,
             self._file_service
         )
 
+        self._settings_tab = SettingsTab(
+            self._page,
+            self._project_service,
+            self.update_project_info
+        )
+
         tab_bar_view = ft.TabBarView(
             expand=True,
-            margin=ft.Margin.all(20),
+            margin=ft.Margin(20, 0, 20, 20),
             controls=[
                 ft.Container(self._main_tab.build()),
                 ft.Container(
                     content=ft.Text('Tasks content'),
                 ),
-                ft.Container(
-                    content=ft.Text('Settings content'),
-                ),
+                ft.Container(self._settings_tab.build()),
             ],
         )
 
@@ -79,11 +82,6 @@ class ProjectScreen(BaseScreen):
             length=3,
             expand=True
         )
-
-        # body_content = ft.PageView(
-        #     [self._project_info_screen.build(), ft.Text('123')],
-        #     implicit_scrolling=True
-        # )
 
         body = ft.Container(
             tabs,

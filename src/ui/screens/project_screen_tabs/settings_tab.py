@@ -1,39 +1,31 @@
+from collections.abc import Callable
 from datetime import timedelta
 
 import flet as ft
 
-from ...constants import ColorPalette, ProjectStatus, RouterPaths
-from ...services import ProjectService
-from ..components import Header
-from ..store import store
-from .base_screen import BaseScreen
+from ....constants import ColorPalette, ProjectStatus
+from ....services import ProjectService
+from ...store import store
 
 
-class ProjectSettingsScreen(BaseScreen):
-    '''Экран проекта.'''
+class SettingsTab:
+    '''Вкладка настроек проекта.'''
 
     def __init__(
         self,
         page: ft.Page,
-        project_service: ProjectService
+        project_service: ProjectService,
+        update_project_info_handler: Callable
     ):
-        super().__init__(page)
-
+        self._page = page
         self._project_service = project_service
+        self._update_project_info_handler = update_project_info_handler
 
-    def build(self, route: str) -> ft.View:
-        '''Сборка интерфейса экрана.'''
+    def build(self) -> ft.Control:
+        '''Сборка интерфейса вкладки.'''
 
         if store.current_project is None:
             raise RuntimeError('Такого проекта не существует')
-
-        header_component = Header(
-            'Настройки проекта',
-            on_back=lambda _: self._page.navigate(
-                RouterPaths.PROJECT_SCREEN
-            )
-        )
-        header = header_component.build()
 
         self._title = ft.TextField(
             hint_text='Нужно заполнить!',
@@ -152,7 +144,7 @@ class ProjectSettingsScreen(BaseScreen):
             )
         )
 
-        body_content = ft.ListView([
+        return ft.ListView([
             title,
             address,
             phone,
@@ -161,18 +153,6 @@ class ProjectSettingsScreen(BaseScreen):
             dates,
             self._save_button
         ], spacing=15)
-
-        body = ft.Container(
-            body_content,
-            bgcolor=ColorPalette.BACKGROUND,
-            padding=ft.Padding.all(20),
-            width=float('inf'),
-            expand=True
-        )
-
-        screen_content = ft.Column([header, body], spacing=0)
-        appbar_wrapper = ft.SafeArea(screen_content, expand=True)
-        return ft.View([appbar_wrapper], route, padding=0)
 
     def _get_wrapper(
         self, content: ft.Control, icon: ft.IconData
@@ -208,7 +188,9 @@ class ProjectSettingsScreen(BaseScreen):
         project.end_date = self._end_date
 
         self._project_service.update_project(project)
-        self._page.navigate(RouterPaths.PROJECT_SCREEN)
+        self._update_project_info_handler()
+        self._show_notif('Проект успешно сохранён')
+        self._page.update()
 
     def _button_switch(self, _):
         '''Выключает кнопку сохранения, если в title проекта пуст.'''
@@ -230,7 +212,10 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if self._end_date and new_date > self._end_date:
-                self._show_error_notif('Ошибка: дата начала проекта должна быть раньше его завершения')
+                self._show_notif(
+                    'Дата начала проекта должна быть раньше его завершения',
+                    True
+                )
                 self._start_date_picker.value = self._start_date
 
             self._start_date = new_date
@@ -245,7 +230,10 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if new_date < self._start_date:
-                self._show_error_notif('Дата завершения проекта должна быть позже его начала!')
+                self._show_notif(
+                    'Дата завершения проекта должна быть позже его начала!',
+                    True
+                )
                 self._end_date_picker.value = self._end_date
 
             self._end_date = new_date
@@ -254,13 +242,13 @@ class ProjectSettingsScreen(BaseScreen):
         else:
             self._end_date_button.content = '-'
 
-    def _show_error_notif(self, text: str):
+    def _show_notif(self, text: str, is_error: bool = False):
         '''Получение всплывашки ошибки с текстом для неправильных дат.'''
 
         notif = ft.SnackBar(
             content=text,
             behavior=ft.SnackBarBehavior.FLOATING,
-            bgcolor=ColorPalette.RED
+            bgcolor=ColorPalette.RED if is_error else ColorPalette.GREEN
         )
 
         self._page.show_dialog(notif)
