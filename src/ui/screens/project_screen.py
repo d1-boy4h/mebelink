@@ -5,7 +5,7 @@ from ...services import FileService, ProjectService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
-from .project_screen_tabs import MainTab, SettingsTab
+from .project_screen_tabs import MainTab, SettingsTab, TasksTab
 
 
 class ProjectScreen(BaseScreen):
@@ -65,14 +65,14 @@ class ProjectScreen(BaseScreen):
             self.update_project_info
         )
 
+        self._tasks_tab = TasksTab()
+
         tab_bar_view = ft.TabBarView(
             expand=True,
             margin=ft.Margin(20, 0, 20, 20),
             controls=[
                 ft.Container(self._main_tab.build()),
-                ft.Container(
-                    content=ft.Text('Tasks content'),
-                ),
+                ft.Container(self._tasks_tab.build()),
                 ft.Container(self._settings_tab.build()),
             ],
         )

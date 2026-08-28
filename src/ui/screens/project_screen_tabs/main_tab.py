@@ -90,10 +90,3 @@ class MainTab:
 
         self._info_block.refresh_rows()
         self._gallery_block.refresh()
-
-    def _back_to_home_screen_handler(self, _):
-        '''Коллбэк перехода на домашний экран для шапки.'''
-
-        store.current_project = None
-        store.current_files = None
-        self._page.navigate(RouterPaths.HOME_SCREEN)
