@@ -24,14 +24,21 @@ class ProjectScreen(BaseScreen):
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
-        project = store.current_project
-        if project is None:
+        self._project = store.current_project
+        if self._project is None:
             raise RuntimeError('Такого проекта не существует')
 
-        self._header_component = Header(self._page, self._page.route)
+        self._header_component = Header(
+            self._project.title,
+            on_back=self._back_to_home_screen_handler,
+            on_settings=lambda _: self._page.navigate(
+                RouterPaths.PROJECT_SETTINGS_SCREEN
+            )
+        )
+
         header = self._header_component.build()
 
-        self._info_block = InfoBlock(project, self._page)
+        self._info_block = InfoBlock(self._project, self._page)
         self._gallery_block = GalleryBlock(self._page, self._file_service)
 
         delete_button = ft.Button(
@@ -107,6 +114,15 @@ class ProjectScreen(BaseScreen):
     def update_blocks(self):
         '''Обновление информации о проекте.'''
 
-        self._header_component.refresh_title()
+        if self._project is None:
+            return
+
+        self._header_component.title = self._project.title
         self._info_block.refresh_rows()
         self._gallery_block.refresh()
+
+    def _back_to_home_screen_handler(self, _):
+        '''Коллбэк перехода на домашний экран для шапки.'''
+        store.current_project = None
+        store.current_files = None
+        self._page.navigate(RouterPaths.HOME_SCREEN)

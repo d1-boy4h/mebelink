@@ -27,7 +27,12 @@ class ProjectSettingsScreen(BaseScreen):
         if store.current_project is None:
             raise RuntimeError('Такого проекта не существует')
 
-        header_component = Header(self._page, self._page.route)
+        header_component = Header(
+            'Настройки проекта',
+            on_back=lambda _: self._page.navigate(
+                RouterPaths.PROJECT_SCREEN
+            )
+        )
         header = header_component.build()
 
         self._title = ft.TextField(
