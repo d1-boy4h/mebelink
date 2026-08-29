@@ -1,7 +1,7 @@
 import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
-from ...services import FileService, ProjectService
+from ...services import FileService, ProjectService, TaskTagService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
@@ -15,12 +15,14 @@ class ProjectScreen(BaseScreen):
         self,
         page: ft.Page,
         project_service: ProjectService,
-        file_service: FileService
+        file_service: FileService,
+        task_tag_service: TaskTagService
     ):
         super().__init__(page)
 
         self._project_service = project_service
         self._file_service = file_service
+        self._task_tag_service = task_tag_service
 
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
@@ -44,13 +46,16 @@ class ProjectScreen(BaseScreen):
                 ft.Tab(ft.Row([
                     ft.Icon(ft.Icons.CHECKLIST), ft.Text('Задачи')
                 ])),
+                # ft.Tab(ft.Row([
+                #     ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Заметки')
+                # ])),
                 ft.Tab(ft.Row([
                     ft.Icon(ft.Icons.SETTINGS), ft.Text('Настройки')
                 ]))
             ],
             indicator_color=ColorPalette.MAIN,
             label_color=ColorPalette.MAIN,
-            unselected_label_color=ColorPalette.GRAY,
+            unselected_label_color=ColorPalette.GRAY
         )
 
         self._main_tab = MainTab(
@@ -65,11 +70,13 @@ class ProjectScreen(BaseScreen):
             self.update_project_info
         )
 
-        self._tasks_tab = TasksTab()
+        self._tasks_tab = TasksTab(
+            self._page,
+            self._task_tag_service
+        )
 
         tab_bar_view = ft.TabBarView(
             expand=True,
-            margin=ft.Margin(20, 0, 20, 20),
             controls=[
                 ft.Container(self._main_tab.build()),
                 ft.Container(self._tasks_tab.build()),
@@ -79,7 +86,7 @@ class ProjectScreen(BaseScreen):
 
         tabs = ft.Tabs(
             ft.Column(controls=[tab_bar, tab_bar_view]),
-            length=3,
+            length=len(tab_bar.tabs),
             expand=True
         )
 
@@ -101,8 +108,11 @@ class ProjectScreen(BaseScreen):
         if project is None: return
 
         self._project_service.delete_project(project.uuid)
+
         store.current_project = None
         store.current_files = None
+        store.current_tags = None
+
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()
 

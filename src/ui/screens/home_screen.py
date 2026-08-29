@@ -22,7 +22,7 @@ class HomeScreen(BaseScreen):
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
-        header_component = Header('Мебелинк', 32, 'bold')
+        header_component = Header('МебеЛинк', 32, 'bold')
         header = header_component.build()
 
         self._project_list_content = ft.ListView(
@@ -71,7 +71,7 @@ class HomeScreen(BaseScreen):
 
         return elements
 
-    def _show_create_project_modal(self, *args):
+    def _show_create_project_modal(self, _):
         '''Отображение модального окна создания проекта.'''
 
         self._text_input = ft.TextField(

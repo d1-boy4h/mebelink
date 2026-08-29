@@ -144,15 +144,19 @@ class SettingsTab:
             )
         )
 
-        return ft.ListView([
-            title,
-            address,
-            phone,
-            status,
-            improvements,
-            dates,
-            self._save_button
-        ], spacing=15)
+        return ft.ListView(
+            controls=[
+                title,
+                address,
+                phone,
+                status,
+                improvements,
+                dates,
+                self._save_button
+            ],
+            spacing=15,
+            padding=ft.Padding(20, 0, 20, 20)
+        )
 
     def _get_wrapper(
         self, content: ft.Control, icon: ft.IconData

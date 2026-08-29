@@ -19,10 +19,9 @@ class App:
 
     def __init__(self, is_debug: bool):
         self._setup_logger(is_debug)
-        self._clean_old_logs(days=7)
-
         self._logger = logging.getLogger('App')
         self._logger.info('Запус клиента...')
+        self._clean_old_logs(days=7)
 
         self._db = Database()
         self._engine = self._db.engine

@@ -77,7 +77,10 @@ class Interface:
         self._screens: dict[str, BaseScreen] = {
             RouterPaths.HOME_SCREEN: HomeScreen(page, self._project_service),
             RouterPaths.PROJECT_SCREEN: ProjectScreen(
-                page, self._project_service, self._file_service
+                page,
+                self._project_service,
+                self._file_service,
+                self._task_tag_service
             )
         }
 

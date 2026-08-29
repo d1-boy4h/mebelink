@@ -60,7 +60,7 @@ class ProjectElement:
 
         project_element = ft.ElevatedButton(
             project_content,
-            on_click=lambda e: on_click(self._project),
+            on_click=lambda _: on_click(self._project),
             style = ft.ButtonStyle(
                 side=None,    # Убираем обводку
                 elevation=0,  # Убираем тень

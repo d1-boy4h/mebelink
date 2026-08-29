@@ -42,11 +42,15 @@ class MainTab:
             )
         )
 
-        return ft.ListView([
-            self._info_block.build(),
-            self._gallery_block.build(),
-            delete_button
-        ], spacing=20)
+        return ft.ListView(
+            controls=[
+                self._info_block.build(),
+                self._gallery_block.build(),
+                delete_button
+            ],
+            spacing=15,
+            padding=ft.Padding(20, 0, 20, 20)
+        )
 
     def _show_delete_project_modal(self, _):
         '''Отображение модального окна подтверждения удаления проекта.'''
