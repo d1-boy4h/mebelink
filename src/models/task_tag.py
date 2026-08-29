@@ -36,4 +36,4 @@ class TaskTagDB(Base):
         index=True
     )
     title: Mapped[str] = mapped_column(nullable=False)
-    is_open: bool = True
+    is_open: Mapped[bool]

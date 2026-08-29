@@ -28,6 +28,7 @@ class TaskTagRepository:
         '''Преобразование модели из ORM в Pydantic.'''
 
         return TaskTag(
+            id=tag_db.id,
             title=tag_db.title,
             project_uuid=UUID(tag_db.project_uuid),
             is_open=tag_db.is_open
@@ -92,7 +93,7 @@ class TaskTagRepository:
         '''Обновление данных раздела.'''
 
         with Session(self._engine) as session:
-            tag_db = session.get(TaskTagDB, tag.title)
+            tag_db = session.get(TaskTagDB, tag.id)
 
             if not tag_db:
                 raise ValueError(f'Раздел \'{tag.title}\' не найден')

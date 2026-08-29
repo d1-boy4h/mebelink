@@ -83,7 +83,7 @@ class HomeScreen(BaseScreen):
 
         accept_button = ft.Button(
             'создать',
-            on_click=lambda e: self._create_project(self._text_input.value),
+            on_click=lambda _: self._create_project(self._text_input.value),
             color='#fff',
             width=float('inf'),
             style=ft.ButtonStyle(
