@@ -21,14 +21,13 @@ class TaskService:
         '''Обновление данных задачи.'''
         return self._task_repo.update(task)
 
-    def delete(self, task_id: int) -> Task | None:
+    def delete(self, task: Task) -> Task | None:
         '''Удаление задачи.'''
 
-        task = self._task_repo.get_by_id(task_id)
-        if not task:
-            raise ValueError(f'Задача c id \'{task_id}\' не найдена')
+        if task.id is None:
+            return None
 
-        return self._task_repo.delete(task_id)
+        return self._task_repo.delete(task.id)
 
     def delete_tag_tasks(self, tag: TaskTag) -> list[Task]:
         '''Удаление всех задач раздела.'''

@@ -101,7 +101,12 @@ class TaskTagElement:
         )]
         if len(tasks):
             task_elements = [
-                TaskElement(task, self._task_service) for task in tasks
+                TaskElement(
+                    task,
+                    self._page,
+                    self._task_service,
+                    self._refresh_task_list
+                ) for task in tasks
             ]
 
             self._task_list.controls = [
@@ -176,6 +181,7 @@ class TaskTagElement:
                 text_size=16,
                 value=self._tag.title,
                 autofocus=True,
+                multiline=True,
                 border=ft.InputBorder.NONE,
                 content_padding=0,
                 expand=True
