@@ -30,7 +30,6 @@ extend-select = ["W293"]
 
 [tool.flet]
 product = 'МебеЛинк'
-splash.android = false
 app.exclude = [
     ".mypy_cache",
     ".pytest_cache",
@@ -44,3 +43,6 @@ app.exclude = [
     # "pyproject.toml",
     # "uv.lock"
 ]
+
+[tool.flet.splash]
+android = false
