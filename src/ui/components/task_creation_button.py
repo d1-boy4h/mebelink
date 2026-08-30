@@ -25,7 +25,7 @@ class TaskCreationButton:
         '''Сборка интерфейса элемента.'''
 
         self._add_btn = ft.ElevatedButton(
-            content=ft.Text('+', size=20, color=ColorPalette.MAIN,),
+            content=ft.Text('+', size=20, color=ColorPalette.MAIN),
             expand=True,
             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
             on_click=lambda _: setattr(self, 'is_creating', True)
@@ -41,7 +41,7 @@ class TaskCreationButton:
 
     @is_creating.setter
     def is_creating(self, value: bool):
-        '''Обработка режима редактирования.'''
+        '''Обработка режима создания.'''
 
         if value and not self.is_creating:
             self._title_input = ft.TextField(
@@ -79,8 +79,5 @@ class TaskCreationButton:
         '''Создание задачи.'''
 
         self.is_creating = False
-
-        if title.strip():
-            self._task_service.create(title, self._tag_id)
-
+        self._task_service.create(title, self._tag_id)
         self._refresh_list_callback()

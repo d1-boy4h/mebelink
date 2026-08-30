@@ -33,4 +33,4 @@ class TaskDB(Base):
         index=True
     )
     title: Mapped[str] = mapped_column(nullable=False)
-    is_completed: bool = False
+    is_completed: Mapped[bool]

@@ -100,7 +100,10 @@ class TaskTagElement:
             margin=ft.Margin.only(bottom=10)
         )]
         if len(tasks):
-            task_elements = [TaskElement(task) for task in tasks]
+            task_elements = [
+                TaskElement(task, self._task_service) for task in tasks
+            ]
+
             self._task_list.controls = [
                 component.build() for component in task_elements
             ]
@@ -169,7 +172,7 @@ class TaskTagElement:
 
         if value and not self._is_editing:
             self._title_input = ft.TextField(
-                hint_text='Новый раздел',
+                hint_text=self._tag.title,
                 text_size=16,
                 value=self._tag.title,
                 autofocus=True,

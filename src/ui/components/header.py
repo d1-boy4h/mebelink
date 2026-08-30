@@ -14,14 +14,12 @@ class Header:
         title: str,
         font_size: int = 24,
         weight: Literal['normal', 'bold'] = 'normal',
-        on_back: Callable | None = None,
-        on_settings: Callable | None = None
+        on_back: Callable | None = None
     ):
         self.__title = title
         self._weight = None if weight == 'normal' else ft.FontWeight.BOLD
         self._font_size = font_size
         self._on_back = on_back
-        self._on_settings = on_settings
 
     @property
     def title(self):
@@ -51,19 +49,10 @@ class Header:
             on_click=self._on_back
         )
 
-        settings_button = ft.IconButton(
-            icon=ft.Icons.SETTINGS,
-            icon_color='#fff',
-            on_click=self._on_settings
-        )
-
         header_content = ft.Row([self._header_title])
 
         if self._on_back is not None:
             header_content.controls = [back_button] + header_content.controls
-
-        if self._on_settings is not None:
-            header_content.controls.append(settings_button)
 
         header = ft.Container(
             header_content,
