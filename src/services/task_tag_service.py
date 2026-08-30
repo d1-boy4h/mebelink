@@ -12,7 +12,6 @@ class TaskTagService:
         self._tag_repo = tag_repo
         self._task_service = task_service
 
-
     def create(self, title: str, project_uuid: UUID) -> TaskTag:
         '''Создание раздела.'''
 

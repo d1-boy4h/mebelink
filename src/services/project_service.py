@@ -4,6 +4,7 @@ from ..constants import ProjectStatus
 from ..models import Project
 from ..repositories import ProjectRepository
 from .file_service import FileService
+from .note_service import NoteService
 from .task_tag_service import TaskTagService
 
 
@@ -14,11 +15,13 @@ class ProjectService:
         self,
         project_repo: ProjectRepository,
         file_service: FileService,
-        tag_service: TaskTagService
+        tag_service: TaskTagService,
+        note_service: NoteService,
     ):
         self._project_repo = project_repo
         self._file_service = file_service
         self._tag_service = tag_service
+        self._note_service = note_service
 
     def create_project(self, title: str) -> Project:
         '''Создание проекта.'''
@@ -52,5 +55,6 @@ class ProjectService:
         if project is not None:
             self._file_service.delete_project_files(project_uuid)
             self._tag_service.delete_project_tags(project_uuid)
+            self._note_service.delete_project_notes(project_uuid)
 
             return self._project_repo.delete(project_uuid)

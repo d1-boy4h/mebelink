@@ -65,7 +65,7 @@ class TaskCreationButton:
                 on_click=lambda _: self._create_task(self._title_input.value)
             )
 
-            buttons = ft.Row([cancel_btn, confirm_btn], spacing=0)
+            buttons = ft.Row([cancel_btn, confirm_btn], spacing=5)
             self._container.controls = [
                 self._title_input, buttons
             ]
