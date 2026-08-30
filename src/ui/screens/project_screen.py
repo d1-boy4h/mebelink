@@ -11,7 +11,7 @@ from ...services import (
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
-from .project_screen_tabs import MainTab, TasksTab
+from .project_screen_tabs import MainTab, NotesTab, TasksTab
 
 
 class ProjectScreen(BaseScreen):
@@ -54,18 +54,19 @@ class ProjectScreen(BaseScreen):
         tab_bar = ft.TabBar(
             tabs=[
                 ft.Tab(ft.Row([
-                    ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Главная')
+                    ft.Icon(ft.Icons.HOME), ft.Text('Главная')
                 ])),
                 ft.Tab(ft.Row([
                     ft.Icon(ft.Icons.CHECKLIST), ft.Text('Задачи')
                 ])),
-                # ft.Tab(ft.Row([
-                #     ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Заметки')
-                # ]))
+                ft.Tab(ft.Row([
+                    ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Заметки')
+                ]))
             ],
             indicator_color=ColorPalette.MAIN,
             label_color=ColorPalette.MAIN,
-            unselected_label_color=ColorPalette.GRAY
+            unselected_label_color=ColorPalette.GRAY,
+            tab_alignment=ft.TabAlignment.CENTER
         )
 
         self._main_tab = MainTab(
@@ -80,11 +81,17 @@ class ProjectScreen(BaseScreen):
             self._task_service
         )
 
+        self._notes_tab = NotesTab(
+            self._page,
+            self._note_service
+        )
+
         tab_bar_view = ft.TabBarView(
             expand=True,
             controls=[
                 ft.Container(self._main_tab.build()),
                 ft.Container(self._tasks_tab.build()),
+                ft.Container(self._notes_tab.build())
             ],
         )
 
@@ -116,6 +123,7 @@ class ProjectScreen(BaseScreen):
         store.current_project = None
         store.current_files = None
         store.current_tags = None
+        store.current_notes = None
 
         self._page.navigate(RouterPaths.HOME_SCREEN)
         self._page.pop_dialog()

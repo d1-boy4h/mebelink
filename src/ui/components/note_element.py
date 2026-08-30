@@ -3,28 +3,24 @@ from collections.abc import Callable
 import flet as ft
 
 from ...constants import ColorPalette
-from ...models import TaskTag
-from ...services import TaskService, TaskTagService
-from .task_creation_button import TaskCreationButton
-from .task_element import TaskElement
+from ...models import Note
+from ...services import NoteService
 
 
-class TaskTagElement:
-    '''Элемент выпадающего списка (раздела) с задачами проекта.'''
+class NoteElement:
+    '''Элемент заметки (раскрывающийся).'''
 
     def __init__(
         self,
-        tag: TaskTag,
+        note: Note,
         page: ft.Page,
-        task_tag_service: TaskTagService,
-        task_service: TaskService,
+        note_service: NoteService,
         refresh_list_callback: Callable
     ):
-        self._tag = tag
+        self._note = note
 
         self._page = page
-        self._task_tag_service = task_tag_service
-        self._task_service = task_service
+        self._note_service = note_service
         self._refresh_list_callback = refresh_list_callback
 
         self.__is_deleting: bool = False
@@ -33,7 +29,7 @@ class TaskTagElement:
     def build(self) -> ft.Control:
         '''Сборка интерфейса элемента.'''
 
-        self._title = ft.Text(self._tag.title, expand=True)
+        self._title = ft.Text(self._note.title, expand=True)
 
         self._edit_btn = ft.IconButton(
             icon=ft.Icons.EDIT,
@@ -50,7 +46,7 @@ class TaskTagElement:
         self._buttons = ft.Row(
             controls=[self._edit_btn, self._delete_btn],
             spacing=0,
-            visible=self._tag.is_open
+            visible=self._note.is_open
         )
 
         self._tile_title_wrapper = ft.Row(
@@ -58,25 +54,34 @@ class TaskTagElement:
             spacing=0
         )
 
-        self._task_list = ft.Column([], spacing=10)
-        self._refresh_task_list()
+        self._description = ft.TextField(
+            text_size=16,
+            hint_text='Описание',
+            value=self._note.desc,
+            autofocus=True,
+            multiline=True,
+            expand=True,
+            on_blur=self._save_note,
+            content_padding=ft.Padding.all(0),
+            border=ft.InputBorder.NONE
+        )
 
         return ft.ExpansionTile(
             title=self._tile_title_wrapper,
-            controls=[self._task_list],
+            controls=[self._description],
             bgcolor='#fff',
             collapsed_bgcolor='#fff',
             shape=ft.RoundedRectangleBorder(radius=10),
             collapsed_shape=ft.RoundedRectangleBorder(radius=10),
             controls_padding=ft.Padding(20, 15, 20, 10),
-            on_change=self._switch_tag_handler,
-            expanded=self._tag.is_open
+            on_change=self._switch_note_handler,
+            expanded=self._note.is_open
         )
 
     def _refresh(self):
         '''Сброс компонента по умолчанию.'''
 
-        self._title.value = self._tag.title
+        self._title.value = self._note.title
         self._title.color = None
 
         self._edit_btn.icon = ft.Icons.EDIT
@@ -85,46 +90,13 @@ class TaskTagElement:
         self._buttons.controls = [self._edit_btn, self._delete_btn]
         self._tile_title_wrapper.controls=[self._title, self._buttons]
 
-    def _refresh_task_list(self):
-        '''Обновление списка задач.'''
+    def _switch_note_handler(self, _):
+        '''Обработка открытия и закрытия заметки.'''
 
-        if self._tag.id is None:
-            return
+        state = not self._note.is_open
 
-        tasks = self._task_service.get_all(self._tag)
-        self._task_list.controls = [ft.Text(
-            value='Здесь пока ничего нет',
-            margin=ft.Margin.only(bottom=10)
-        )]
-        if len(tasks):
-            task_elements = [
-                TaskElement(
-                    task,
-                    self._page,
-                    self._task_service,
-                    self._refresh_task_list
-                ) for task in tasks
-            ]
-
-            self._task_list.controls = [
-                component.build() for component in task_elements
-            ]
-
-        self._task_creation_btn = TaskCreationButton(
-            self._tag.id,
-            self._task_service,
-            self._refresh_task_list
-        )
-        self._task_list.controls.append(self._task_creation_btn.build())
-        self._page.update()
-
-    def _switch_tag_handler(self, _):
-        '''Обработка открытия и закрытия раздела.'''
-
-        state = not self._tag.is_open
-
-        self._tag.is_open = state
-        self._task_tag_service.update(self._tag)
+        self._note.is_open = state
+        self._note_service.update(self._note)
 
         self._buttons.visible = state
 
@@ -132,9 +104,6 @@ class TaskTagElement:
             self._is_deleting = False
             self._is_editing = False
             self._refresh()
-
-        if state and self._task_creation_btn.is_creating:
-            self._task_creation_btn.is_creating = False
 
     @property
     def _is_deleting(self):
@@ -156,7 +125,7 @@ class TaskTagElement:
             self._buttons.controls = [self._delete_btn, cancel_btn]
 
         elif value and self._is_deleting:
-            self._task_tag_service.delete_tag(self._tag)
+            self._note_service.delete(self._note)
             self._refresh_list_callback()
 
         else:
@@ -174,9 +143,9 @@ class TaskTagElement:
 
         if value and not self._is_editing:
             self._title_input = ft.TextField(
-                hint_text=self._tag.title,
+                hint_text=self._note.title,
                 text_size=16,
-                value=self._tag.title,
+                value=self._note.title,
                 autofocus=True,
                 multiline=True,
                 border=ft.InputBorder.NONE,
@@ -200,9 +169,9 @@ class TaskTagElement:
 
         elif value and self._is_editing:
             if self._title_input.value and \
-            self._title_input.value != self._tag.title:
-                self._tag.title = self._title_input.value
-                self._task_tag_service.update(self._tag)
+            self._title_input.value != self._note.title:
+                self._note.title = self._title_input.value
+                self._note_service.update(self._note)
 
             self.__is_editing = False
             self._refresh()
@@ -212,3 +181,12 @@ class TaskTagElement:
             self._refresh()
 
         self.__is_editing = value
+
+    def _save_note(self, _):
+        '''Сохранение заметки при расфокусировке описания заметки.'''
+
+        new_desc = self._description.value
+
+        if self._note.desc != new_desc.strip():
+            self._note.desc = new_desc
+            self._note_service.update(self._note)
