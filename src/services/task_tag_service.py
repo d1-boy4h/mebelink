@@ -28,14 +28,14 @@ class TaskTagService:
         '''Обновление данных раздела (открытие, закрытие и переименование).'''
         return self._tag_repo.update(tag)
 
-    def delete_tag(self, tag_id: int) -> TaskTag | None:
+    def delete_tag(self, tag: TaskTag) -> TaskTag | None:
         '''Удаление раздела.'''
 
-        tag = self._tag_repo.get_by_id(tag_id)
-        if not tag:
-            raise ValueError(f'Раздел c id \'{tag_id}\' не найден')
+        if tag.id is None:
+            return None
 
-        return self._tag_repo.delete(tag_id)
+        self._task_service.delete_tag_tasks(tag)
+        return self._tag_repo.delete(tag.id)
 
     def delete_project_tags(self, project_uuid: UUID) -> list[TaskTag]:
         '''Удаление всех разделов проекта.'''

@@ -1,8 +1,7 @@
 import flet as ft
 
 from ....constants import ColorPalette
-from ....models import TaskTag
-from ....services import TaskTagService
+from ....services import TaskService, TaskTagService
 from ...components import TaskTagElement
 from ...store import store
 
@@ -10,9 +9,15 @@ from ...store import store
 class TasksTab:
     '''Вкладка с задачами проекта.'''
 
-    def __init__(self, page: ft.Page, task_tag_service: TaskTagService):
+    def __init__(
+            self,
+            page: ft.Page,
+            task_tag_service: TaskTagService,
+            task_service: TaskService
+        ):
         self._page = page
         self._task_tag_service = task_tag_service
+        self._task_service = task_service
 
     def build(self) -> ft.Control:
         '''Сборка интерфейса вкладки.'''
@@ -24,7 +29,6 @@ class TasksTab:
         self._tags_listview = ft.ListView(
             controls=[],
             spacing=20,
-            auto_scroll=True,
             padding=ft.Padding(20, 0, 20, 20)
         )
 
@@ -43,7 +47,7 @@ class TasksTab:
         return ft.Stack([self._tags_listview, create_tag_button])
 
     def refresh(self):
-        '''Обновление разделов задач при переключении проекта.'''
+        '''Обновление списка разделов задач.'''
 
         if self._project is None:
             return
@@ -55,13 +59,15 @@ class TasksTab:
         for tag in tags:
             task_tag_element = TaskTagElement(
                 tag,
+                self._page,
                 self._task_tag_service,
-                self.refresh,
-                self._show_edit_tag_modal
+                self._task_service,
+                self.refresh
             )
             tag_elements.append(task_tag_element.build())
 
         self._tags_listview.controls = tag_elements
+        self._page.update()
 
     def _show_create_task_tag_modal(self, _):
         '''Отображение модального окна создания раздела для задач.'''
@@ -105,46 +111,3 @@ class TasksTab:
         self.refresh()
         self._page.pop_dialog()
         self._page.update()
-
-    def _show_edit_tag_modal(self, tag: TaskTag):
-         '''Отображение модального окна переименования раздела с задачами.'''
-
-         self._text_input = ft.TextField(
-             value=tag.title,
-             hint_text='Заголовок',
-             autofocus=True,
-             border=ft.InputBorder.NONE,
-             text_size=20
-         )
-
-         accept_button = ft.Button(
-             'Переименовать',
-             on_click=lambda _: self._rename_tag(tag, self._text_input.value),
-             color='#fff',
-             width=float('inf'),
-             style=ft.ButtonStyle(
-                 bgcolor=ColorPalette.MAIN,
-                 text_style=ft.TextStyle(size=18),
-                 padding=ft.Padding(20, 15, 20, 15)
-             )
-         )
-
-         modal = ft.AlertDialog(
-             self._text_input,
-             shape=ft.RoundedRectangleBorder(radius=5),
-             actions=[accept_button],
-             bgcolor='#fff'
-         )
-
-         self._page.show_dialog(modal)
-
-    def _rename_tag(self, tag: TaskTag, title: str):
-        '''Переименования раздела задач в модальном окне.'''
-
-        self._page.pop_dialog()
-        if tag.title.strip() != title:
-            tag.title = title
-            self._task_tag_service.update(tag)
-            self.refresh()
-            self._page.update()
-

@@ -4,7 +4,7 @@ from sqlalchemy import Engine, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from ..models import Task, TaskDB
+from ..models import Task, TaskDB, TaskTag
 
 
 class TaskRepository:
@@ -73,17 +73,17 @@ class TaskRepository:
 
             return None 
 
-    def get_by_task_tag(self, tag_id: int) -> list[Task]:
+    def get_by_task_tag(self, tag: TaskTag) -> list[Task]:
         '''Получение всех задач раздела.'''
 
         with Session(self._engine) as session:
             tasks_db = session.execute(
-                select(TaskDB).where(TaskDB.task_tag_id == tag_id)
+                select(TaskDB).where(TaskDB.task_tag_id == tag.id)
             ).scalars().all()
 
             if len(tasks_db):
                 self._logger.info(
-                    f'Задач получено из базы данных: {len(tasks_db)}'
+                    f'Задач раздела \'{tag.title}\' получено из базы данных: {len(tasks_db)}'
                 )
 
             return [self._to_pydantic(task) for task in tasks_db]

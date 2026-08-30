@@ -52,4 +52,5 @@ class ProjectService:
         if project is not None:
             self._file_service.delete_project_files(project_uuid)
             self._tag_service.delete_project_tags(project_uuid)
+
             return self._project_repo.delete(project_uuid)

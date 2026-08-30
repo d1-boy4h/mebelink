@@ -80,7 +80,8 @@ class Interface:
                 page,
                 self._project_service,
                 self._file_service,
-                self._task_tag_service
+                self._task_tag_service,
+                self._task_service
             )
         }
 

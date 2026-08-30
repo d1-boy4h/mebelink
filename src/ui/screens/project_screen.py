@@ -1,7 +1,7 @@
 import flet as ft
 
 from ...constants import ColorPalette, RouterPaths
-from ...services import FileService, ProjectService, TaskTagService
+from ...services import FileService, ProjectService, TaskService, TaskTagService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
@@ -16,13 +16,15 @@ class ProjectScreen(BaseScreen):
         page: ft.Page,
         project_service: ProjectService,
         file_service: FileService,
-        task_tag_service: TaskTagService
+        task_tag_service: TaskTagService,
+        task_service: TaskService
     ):
         super().__init__(page)
 
         self._project_service = project_service
         self._file_service = file_service
         self._task_tag_service = task_tag_service
+        self._task_service = task_service
 
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
@@ -72,7 +74,8 @@ class ProjectScreen(BaseScreen):
 
         self._tasks_tab = TasksTab(
             self._page,
-            self._task_tag_service
+            self._task_tag_service,
+            self._task_service
         )
 
         tab_bar_view = ft.TabBarView(
