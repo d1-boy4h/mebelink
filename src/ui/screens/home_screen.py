@@ -38,7 +38,7 @@ class HomeScreen(BaseScreen):
             padding=ft.Padding.only(top=20, bottom=20)
         )
 
-        wrapper = ft.Column(
+        body = ft.Column(
             [header, project_list],
             spacing=0
         )
@@ -53,7 +53,7 @@ class HomeScreen(BaseScreen):
             on_click=self._show_create_project_modal
         )
 
-        screen_content = ft.Stack([wrapper, create_project_button])
+        screen_content = ft.Stack([body, create_project_button])
         appbar_wrapper = ft.SafeArea(screen_content, expand=True)
         return ft.View([appbar_wrapper], route, padding=0)
 

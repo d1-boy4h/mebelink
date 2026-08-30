@@ -5,7 +5,7 @@ from ...services import FileService, ProjectService, TaskService, TaskTagService
 from ..components import Header
 from ..store import store
 from .base_screen import BaseScreen
-from .project_screen_tabs import MainTab, SettingsTab, TasksTab
+from .project_screen_tabs import MainTab, TasksTab
 
 
 class ProjectScreen(BaseScreen):
@@ -35,7 +35,10 @@ class ProjectScreen(BaseScreen):
 
         self._header_component = Header(
             self._project.title,
-            on_back=self._back_to_home_screen_handler
+            on_back=self._back_to_home_screen_handler,
+            on_settings=lambda: self._page.navigate(
+                RouterPaths.SETTINGS_SCREEN
+            )
         )
 
         header = self._header_component.build()
@@ -50,10 +53,7 @@ class ProjectScreen(BaseScreen):
                 ])),
                 # ft.Tab(ft.Row([
                 #     ft.Icon(ft.Icons.ASSIGNMENT), ft.Text('Заметки')
-                # ])),
-                ft.Tab(ft.Row([
-                    ft.Icon(ft.Icons.SETTINGS), ft.Text('Настройки')
-                ]))
+                # ]))
             ],
             indicator_color=ColorPalette.MAIN,
             label_color=ColorPalette.MAIN,
@@ -64,12 +64,6 @@ class ProjectScreen(BaseScreen):
             self._page,
             self._project_service,
             self._file_service
-        )
-
-        self._settings_tab = SettingsTab(
-            self._page,
-            self._project_service,
-            self.update_project_info
         )
 
         self._tasks_tab = TasksTab(
@@ -83,7 +77,6 @@ class ProjectScreen(BaseScreen):
             controls=[
                 ft.Container(self._main_tab.build()),
                 ft.Container(self._tasks_tab.build()),
-                ft.Container(self._settings_tab.build()),
             ],
         )
 

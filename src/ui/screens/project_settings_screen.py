@@ -1,31 +1,35 @@
-from collections.abc import Callable
 from datetime import timedelta
 
 import flet as ft
 
-from ....constants import ColorPalette, ProjectStatus
-from ....services import ProjectService
-from ...store import store
+from ...constants import ColorPalette, ProjectStatus, RouterPaths
+from ...services import ProjectService
+from ..components import Header
+from ..store import store
+from .base_screen import BaseScreen
 
 
-class SettingsTab:
+class ProjectSettingsScreen(BaseScreen):
     '''Вкладка настроек проекта.'''
 
-    def __init__(
-        self,
-        page: ft.Page,
-        project_service: ProjectService,
-        update_project_info_handler: Callable
-    ):
-        self._page = page
+    def __init__(self, page: ft.Page, project_service: ProjectService):
+        super().__init__(page)
         self._project_service = project_service
-        self._update_project_info_handler = update_project_info_handler
 
-    def build(self) -> ft.Control:
-        '''Сборка интерфейса вкладки.'''
+    def build(self, route: str) -> ft.View:
+        '''Сборка интерфейса экрана.'''
 
         if store.current_project is None:
             raise RuntimeError('Такого проекта не существует')
+
+        self._header_component = Header(
+            'Настройки',
+            on_back=lambda: self._page.navigate(
+                RouterPaths.PROJECT_SCREEN
+            )
+        )
+
+        header = self._header_component.build()
 
         self._title = ft.TextField(
             hint_text='Нужно заполнить!',
@@ -137,14 +141,13 @@ class SettingsTab:
             color='#fff',
             bgcolor=ColorPalette.GREEN,
             on_click=self._save_project,
-            margin=ft.Margin.only(top=10),
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=10),
                 padding=ft.Padding.all(15)
             )
         )
 
-        return ft.ListView(
+        settings_list = ft.ListView(
             controls=[
                 title,
                 address,
@@ -154,9 +157,20 @@ class SettingsTab:
                 dates,
                 self._save_button
             ],
-            spacing=15,
-            padding=ft.Padding(20, 0, 20, 20)
+            spacing=15
         )
+
+        body = ft.Container(
+            settings_list,
+            bgcolor=ColorPalette.BACKGROUND,
+            expand=True,
+            width=float('inf'),
+            padding=ft.Padding(20, 20, 20, 0)
+        )
+
+        screen_content = ft.Column([header, body], spacing=0)
+        appbar_wrapper = ft.SafeArea(screen_content, expand=True)
+        return ft.View([appbar_wrapper], route, padding=0)
 
     def _get_wrapper(
         self, content: ft.Control, icon: ft.IconData
@@ -192,9 +206,10 @@ class SettingsTab:
         project.end_date = self._end_date
 
         self._project_service.update_project(project)
-        self._update_project_info_handler()
+        self._page.navigate(RouterPaths.PROJECT_SCREEN)
+        # self._update_project_info_handler()
         self._show_notif('Проект успешно сохранён')
-        self._page.update()
+        # self._page.update()
 
     def _button_switch(self, _):
         '''Выключает кнопку сохранения, если в title проекта пуст.'''

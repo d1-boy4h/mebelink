@@ -3,7 +3,7 @@ from flet import run as run_flet_engine
 
 from ..constants import ColorPalette, RouterPaths
 from ..services import FileService, ProjectService, TaskService, TaskTagService
-from .screens import BaseScreen, HomeScreen, ProjectScreen
+from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
 
 
 class Interface:
@@ -82,7 +82,8 @@ class Interface:
                 self._file_service,
                 self._task_tag_service,
                 self._task_service
-            )
+            ),
+            RouterPaths.SETTINGS_SCREEN: ProjectSettingsScreen(page, self._project_service),
         }
 
         page.title = 'МебеЛинк'
