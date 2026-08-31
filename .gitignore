@@ -6,5 +6,6 @@ build/
 logs/
 assets/*
 !assets/icon_android.png
+!assets/splash.png
 
 data.db
