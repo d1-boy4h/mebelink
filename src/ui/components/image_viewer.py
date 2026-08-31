@@ -221,7 +221,7 @@ class ImageViewer:
 
         file = self._files[self._file_index]
         if file.id is not None:
-            self._file_service.delete_file(file.id)
+            self._file_service.delete_file(file)
             self._refresh_callback()
             self._page.pop_dialog()
             self._close()

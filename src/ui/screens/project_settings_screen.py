@@ -6,6 +6,7 @@ from ...constants import ColorPalette, ProjectStatus, RouterPaths
 from ...services import ProjectService
 from ..components import Header
 from ..store import store
+from ..utils import show_notify
 from .base_screen import BaseScreen
 
 
@@ -24,9 +25,7 @@ class ProjectSettingsScreen(BaseScreen):
 
         self._header_component = Header(
             'Настройки',
-            on_back=lambda: self._page.navigate(
-                RouterPaths.PROJECT_SCREEN
-            )
+            on_back=self._save_project
         )
 
         header = self._header_component.build()
@@ -191,6 +190,7 @@ class ProjectSettingsScreen(BaseScreen):
         if store.current_project is None:
             return
 
+        old_project = store.current_project.model_copy()
         project = store.current_project
         project.title = self._title.value
         project.address = self._address.value if self._address.value else None
@@ -205,11 +205,11 @@ class ProjectSettingsScreen(BaseScreen):
         project.start_date = self._start_date
         project.end_date = self._end_date
 
-        self._project_service.update_project(project)
+        if old_project != project:
+            self._project_service.update_project(project)
+            show_notify(self._page, 'Проект успешно сохранён')
+
         self._page.navigate(RouterPaths.PROJECT_SCREEN)
-        # self._update_project_info_handler()
-        self._show_notif('Проект успешно сохранён')
-        # self._page.update()
 
     def _button_switch(self, _):
         '''Выключает кнопку сохранения, если в title проекта пуст.'''
@@ -231,7 +231,8 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if self._end_date and new_date > self._end_date:
-                self._show_notif(
+                show_notify(
+                    self._page,
                     'Дата начала проекта должна быть раньше его завершения',
                     True
                 )
@@ -249,9 +250,10 @@ class ProjectSettingsScreen(BaseScreen):
             new_date = raw_date + timedelta(days=1)
 
             if new_date < self._start_date:
-                self._show_notif(
+                show_notify(
+                    self._page,
                     'Дата завершения проекта должна быть позже его начала!',
-                    True
+                    is_error=True
                 )
                 self._end_date_picker.value = self._end_date
 
@@ -260,14 +262,3 @@ class ProjectSettingsScreen(BaseScreen):
             self._end_date_picker.value = new_date
         else:
             self._end_date_button.content = '-'
-
-    def _show_notif(self, text: str, is_error: bool = False):
-        '''Получение всплывашки ошибки с текстом для неправильных дат.'''
-
-        notif = ft.SnackBar(
-            content=text,
-            behavior=ft.SnackBarBehavior.FLOATING,
-            bgcolor=ColorPalette.RED if is_error else ColorPalette.GREEN
-        )
-
-        self._page.show_dialog(notif)

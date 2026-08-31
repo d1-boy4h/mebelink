@@ -3,6 +3,7 @@ import flet as ft
 from ...constants import ColorPalette
 from ...services import FileService
 from ..store import store
+from ..utils import show_notify
 from .image_viewer import ImageViewer
 
 
@@ -87,17 +88,6 @@ class GalleryBlock:
                 )
 
             except ValueError as e:
-                self._show_error_notif(f'{e}!')
+                show_notify(self._page, f'{e}!', is_error=True)
 
         self.refresh()
-
-    def _show_error_notif(self, text: str):
-        '''Получение всплывашки ошибки с текстом для повторного файла.'''
-
-        notif = ft.SnackBar(
-            content=text,
-            behavior=ft.SnackBarBehavior.FLOATING,
-            bgcolor=ColorPalette.RED
-        )
-
-        self._page.show_dialog(notif)

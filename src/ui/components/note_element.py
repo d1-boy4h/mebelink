@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import Callable
 
 import flet as ft
@@ -25,6 +26,7 @@ class NoteElement:
 
         self.__is_deleting: bool = False
         self.__is_editing: bool = False
+        self._save_task: asyncio.Task | None = None
 
     def build(self) -> ft.Control:
         '''Сборка интерфейса элемента.'''
@@ -61,7 +63,8 @@ class NoteElement:
             autofocus=True,
             multiline=True,
             expand=True,
-            on_blur=self._save_note,
+            on_blur=self._save_desc_note,
+            on_change=self._on_desc_change,
             content_padding=ft.Padding.all(0),
             border=ft.InputBorder.NONE
         )
@@ -182,11 +185,30 @@ class NoteElement:
 
         self.__is_editing = value
 
-    def _save_note(self, _):
-        '''Сохранение заметки при расфокусировке описания заметки.'''
+    def _on_desc_change(self, _):
+        '''Debounce-декоратор для сохранения описания заметки.'''
+
+        if self._save_task:
+            self._save_task.cancel()
+
+        self._save_task = asyncio.create_task(self._save_desc_with_delay())
+        self._description.color = ColorPalette.GRAY
+
+    async def _save_desc_with_delay(self):
+        '''Сохранение заметки через секунду после последнего изменения.'''
+
+        await asyncio.sleep(1)
+        self._save_desc_note()
+
+    def _save_desc_note(self, _ = None):
+        '''Сохранение описания заметки.'''
 
         new_desc = self._description.value
 
         if self._note.desc != new_desc.strip():
             self._note.desc = new_desc
             self._note_service.update(self._note)
+
+        self._save_task = None
+        self._description.color = None
+        self._page.update()

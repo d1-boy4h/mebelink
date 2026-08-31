@@ -44,19 +44,22 @@ class FileService:
         '''Получение всех файлов проекта.'''
         return self._file_repo.get_by_project(project_uuid)
 
-    def delete_file(self, file_id: int) -> File | None:
+    def delete_file(self, file: File) -> File | None:
         '''Удаление файла с диска и БД.'''
 
-        file = self._file_repo.get_by_id(file_id)
-        if not file:
-            raise ValueError(f'Файл c id \'{file_id}\' не найден')
+        if file.id is None:
+            raise ValueError(f'Файл \'{file.filename}\' не найден')
 
         file_path = Path(file.path)
         if file_path.exists():
             file_path.unlink()
             self._logger.info(f'Физический файл \'{file.filename}\' удалён')
 
-        return self._file_repo.delete(file_id)
+            project_dir = self._get_project_dir(file.project_uuid)
+            if project_dir.exists() and not any(Path(project_dir).iterdir()):
+                project_dir.rmdir()
+
+        return self._file_repo.delete(file.id)
 
     def delete_project_files(self, project_uuid: UUID) -> list[File]:
         '''Удаление всех файлов проекта.'''

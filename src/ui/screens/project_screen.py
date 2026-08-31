@@ -136,6 +136,7 @@ class ProjectScreen(BaseScreen):
 
         self._header_component.title = self._project.title
         self._main_tab.update_blocks()
+        self._page.update()
 
     def _back_to_home_screen_handler(self, _):
         '''Коллбэк перехода на домашний экран для шапки.'''

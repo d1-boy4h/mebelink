@@ -1,5 +1,4 @@
 from collections.abc import Callable
-from typing import Literal
 
 import flet as ft
 
@@ -12,16 +11,17 @@ class Header:
     def __init__(
         self,
         title: str,
-        font_size: int = 24,
-        weight: Literal['normal', 'bold'] = 'normal',
+        is_logo: bool = False,
         on_back: Callable | None = None,
         on_settings: Callable | None = None
     ):
         self.__title = title
-        self._weight = None if weight == 'normal' else ft.FontWeight.BOLD
-        self._font_size = font_size
         self._on_back = on_back
         self._on_settings = on_settings
+
+        self._is_logo = is_logo
+        self._weight = ft.FontWeight.BOLD if is_logo else None
+        self._font_size = 32 if is_logo else 24
 
     @property
     def title(self):
@@ -64,6 +64,10 @@ class Header:
 
         if self._on_settings is not None:
             header_content.controls.append(settings_button)
+
+        if self._is_logo:
+            version = ft.Text('v1.0.0', color='#ffffff', opacity=0.5)
+            header_content.controls.append(version)
 
         header = ft.Container(
             header_content,

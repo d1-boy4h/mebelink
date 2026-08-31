@@ -2,7 +2,8 @@ import sys
 
 from src import App
 
-__author__ = 'd1_boy4h'
+__author__  = 'd1_boy4h'
+__version__ = '1.0.0'
 
 if __name__ == '__main__':
     is_debug = False

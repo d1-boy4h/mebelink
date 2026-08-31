@@ -2,6 +2,7 @@ import flet as ft
 
 from ...constants import ColorPalette
 from ...models import Project
+from ..utils import show_notify
 
 
 class InfoBlock:
@@ -34,13 +35,11 @@ class InfoBlock:
         if await url_launcer.can_launch_url(url):
             await url_launcer.launch_url(url)
         else:
-            notif = ft.SnackBar(
-                content='Ошибка: звонки не поддерживаются на этом устройстве',
-                behavior=ft.SnackBarBehavior.FLOATING,
-                bgcolor=ColorPalette.RED
+            show_notify(
+                self._page,
+                'Звонки не поддерживаются на этом устройстве',
+                is_error=True
             )
-
-            self._page.show_dialog(notif)
 
     def _get_row_info(
         self,

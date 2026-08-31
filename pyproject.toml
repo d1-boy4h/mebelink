@@ -1,6 +1,6 @@
 [project]
 name = "mebelink"
-version = "1.0"
+version = "1.0.0"
 description = "Mobile app for furniture management"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -39,10 +39,16 @@ app.exclude = [
     "tests",
     ".gitignore",
     ".python-version",
-    "data.db",
-    # "pyproject.toml",
-    # "uv.lock"
+    "data.db"
 ]
 
 [tool.flet.splash]
-android = false
+color = "#ffffff"
+dark_color = "#ffffff"
+
+[tool.flet.boot_screen.flet]
+theme_mode = "light"
+bgcolor_light = "#ffffff"
+spinner_color_light = "#4e78ef"
+spinner_size = 30
+text_color_light = "#000000"

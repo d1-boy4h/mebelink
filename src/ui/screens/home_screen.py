@@ -22,7 +22,7 @@ class HomeScreen(BaseScreen):
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
-        header_component = Header('МебеЛинк', 32, 'bold')
+        header_component = Header('МебеЛинк', is_logo=True)
         header = header_component.build()
 
         self._project_list_content = ft.ListView(
