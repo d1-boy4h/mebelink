@@ -70,7 +70,7 @@ class FileRepository:
 
             if file_db:
                 self._logger.info(
-                    f'Файл \'{file_id}\' получен из базы данных'
+                    f'Файл \'{file_db.filename}\' получен из базы данных'
                 )
                 return self._to_pydantic(file_db)
 
@@ -119,11 +119,11 @@ class FileRepository:
 
                 raise RuntimeError(f'Ошибка обновления файла: {error}')
 
-    def delete(self, file_id: int) -> File | None:
+    def delete(self, file: File) -> File | None:
         '''Удаление файла.'''
 
         with Session(self._engine) as session:
-            file_db = session.get(FileDB, file_id)
+            file_db = session.get(FileDB, file.id)
             if not file_db: return None
 
             deleted_file = self._to_pydantic(file_db)
@@ -132,14 +132,14 @@ class FileRepository:
 
             try:
                 session.commit()
-                self._logger.info(f'Файл \'{file_id}\' удалён')
+                self._logger.info(f'Файл \'{file.filename}\' удалён')
 
                 return deleted_file
 
             except SQLAlchemyError as error:
                 session.rollback()
                 self._logger.error(
-                    f'Ошибка удаления Файла \'{file_id}\': {error}'
+                    f'Ошибка удаления Файла \'{file.filename}\': {error}'
                 )
 
                 raise RuntimeError(f'Ошибка удаления файла: {error}')

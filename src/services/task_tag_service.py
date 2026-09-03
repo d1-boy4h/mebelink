@@ -40,11 +40,10 @@ class TaskTagService:
         '''Удаление всех разделов проекта.'''
 
         tags = self._tag_repo.get_by_project(project_uuid)
-        deleted_files = []
+        deleted_tags = []
         for tag in tags:
-            if tag.id is not None:
-                deleted_tag = self._tag_repo.delete(tag.id)
-                if isinstance(deleted_tag, TaskTag):
-                    deleted_files.append(deleted_tag)
+            deleted_tag = self.delete_tag(tag)
+            if isinstance(deleted_tag, TaskTag):
+                deleted_tags.append(deleted_tag)
 
-        return deleted_files
+        return deleted_tags

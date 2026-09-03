@@ -47,9 +47,6 @@ class FileService:
     def delete_file(self, file: File) -> File | None:
         '''Удаление файла с диска и БД.'''
 
-        if file.id is None:
-            raise ValueError(f'Файл \'{file.filename}\' не найден')
-
         file_path = Path(file.path)
         if file_path.exists():
             file_path.unlink()
@@ -59,7 +56,7 @@ class FileService:
             if project_dir.exists() and not any(Path(project_dir).iterdir()):
                 project_dir.rmdir()
 
-        return self._file_repo.delete(file.id)
+        return self._file_repo.delete(file)
 
     def delete_project_files(self, project_uuid: UUID) -> list[File]:
         '''Удаление всех файлов проекта.'''
@@ -73,7 +70,7 @@ class FileService:
         deleted_files = []
         for file in files:
             if file.id is not None:
-                deleted_file = self._file_repo.delete(file.id)
+                deleted_file = self._file_repo.delete(file)
                 if isinstance(deleted_file, File):
                     deleted_files.append(deleted_file)
 

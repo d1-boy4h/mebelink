@@ -66,7 +66,7 @@ class Header:
             header_content.controls.append(settings_button)
 
         if self._is_logo:
-            version = ft.Text('v1.0.0', color='#ffffff', opacity=0.5)
+            version = ft.Text('v1.0.1', color='#ffffff', opacity=0.5)
             header_content.controls.append(version)
 
         header = ft.Container(
