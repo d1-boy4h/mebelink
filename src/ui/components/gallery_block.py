@@ -1,3 +1,5 @@
+import logging
+
 import flet as ft
 
 from ...constants import ColorPalette
@@ -15,6 +17,7 @@ class GalleryBlock:
         self._file_service = file_service
 
         self._viewer = ImageViewer(page, file_service, self.refresh)
+        self._logger = logging.getLogger('GalleryBlock')
 
     def build(self) -> ft.Control:
         '''Построение интерфейса блока.'''
@@ -70,24 +73,39 @@ class GalleryBlock:
         if store.current_project is None:
             return
 
-        files = await self._file_picker.pick_files(
-            allow_multiple=True,
-            file_type=ft.FilePickerFileType.IMAGE,
-            with_data=True
-        )
+        try:
+            self._file_picker_btn.disabled = True
+            self._file_picker_btn.bgcolor = ColorPalette.GRAY
 
-        for file in files:
-            if file.bytes is None:
-                continue
+            files = await self._file_picker.pick_files(
+                allow_multiple=True,
+                file_type=ft.FilePickerFileType.IMAGE,
+                with_data=True
+            )
 
-            try:
-                self._file_service.save_file(
-                    store.current_project.uuid,
-                    file.name,
-                    file.bytes
-                )
+            for file in files:
+                if file.bytes is None:
+                    continue
 
-            except ValueError as e:
-                show_notify(self._page, f'{e}!', is_error=True)
+                try:
+                    self._file_service.save_file(
+                        store.current_project.uuid,
+                        file.name,
+                        file.bytes
+                    )
+
+                except ValueError as e:
+                    show_notify(self._page, f'{e}!', is_error=True)
+        except Exception as e:  # noqa: BLE001
+            show_notify(
+                self._page,
+                'Кажется, что-то сломалось... (подробности в логе)',
+                is_error=True
+            )
+
+            self._logger.error(f'{e}')
+        finally:
+            self._file_picker_btn.disabled = False
+            self._file_picker_btn.bgcolor = ColorPalette.MAIN
 
         self.refresh()
