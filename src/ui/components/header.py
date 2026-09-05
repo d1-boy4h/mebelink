@@ -23,6 +23,8 @@ class Header:
         self._weight = ft.FontWeight.BOLD if is_logo else None
         self._font_size = 32 if is_logo else 24
 
+        self._version = '1.0.2'
+
     @property
     def title(self):
         return self.__title
@@ -66,7 +68,11 @@ class Header:
             header_content.controls.append(settings_button)
 
         if self._is_logo:
-            version = ft.Text('v1.0.1', color='#ffffff', opacity=0.5)
+            version = ft.Text(
+                f'v{self._version}',
+                color='#ffffff',
+                opacity=0.5
+            )
             header_content.controls.append(version)
 
         header = ft.Container(

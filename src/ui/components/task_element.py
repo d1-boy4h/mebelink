@@ -155,8 +155,6 @@ class TaskElement:
             self._checkbox.visible = False
             self._buttons.visible = True
 
-            # self._page.update()
-
         else:
             self._refresh()
 
@@ -170,7 +168,6 @@ class TaskElement:
             self._task_service.update(self._task)
 
         self._is_editing = False
-        # self._page.update()
 
     def _delete(self):
         '''Удаление задачи.'''

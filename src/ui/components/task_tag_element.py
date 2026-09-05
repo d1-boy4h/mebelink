@@ -96,6 +96,7 @@ class TaskTagElement:
             value='Здесь пока ничего нет',
             margin=ft.Margin.only(bottom=10)
         )]
+
         if len(tasks):
             task_elements = [
                 TaskElement(
