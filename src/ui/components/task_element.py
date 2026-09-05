@@ -61,10 +61,11 @@ class TaskElement:
             on_click=lambda _: setattr(self, '_is_editing', False)
         )
 
-        rename_btn = ft.IconButton(
+        self._rename_btn = ft.IconButton(
             icon=ft.Icons.EDIT,
-            icon_color=ColorPalette.MAIN,
+            icon_color=ColorPalette.GRAY,
             icon_size=24,
+            disabled=True,
             on_click=lambda: self._rename(self._title_input.value)
         )
 
@@ -76,7 +77,7 @@ class TaskElement:
         )
 
         self._buttons = ft.Row(
-            controls=[delete_btn, rename_btn, cancel_btn],
+            controls=[delete_btn, self._rename_btn, cancel_btn],
             spacing=0,
             expand=True,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -90,7 +91,9 @@ class TaskElement:
             expand=True,
             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.Padding(20, 20, 10, 20)),
             on_click=self._on_click,
-            on_long_press=lambda _: setattr(self, '_is_editing', True)
+            on_long_press=lambda _: setattr(
+                self, '_is_editing', not self._is_editing
+            )
         )
 
     def _on_click(self, _):
@@ -148,7 +151,8 @@ class TaskElement:
                 multiline=True,
                 border=ft.InputBorder.NONE,
                 content_padding=0,
-                expand=True
+                expand=True,
+                on_change=self._on_input_change
             )
 
             self._title_wrapper.content = self._title_input
@@ -169,8 +173,25 @@ class TaskElement:
 
         self._is_editing = False
 
+        self._rename_btn.icon_color = ColorPalette.GRAY
+        self._rename_btn.disabled = True
+
     def _delete(self):
         '''Удаление задачи.'''
 
         self._task_service.delete(self._task)
         self._refresh_list_callback()
+
+    def _on_input_change(self, e: ft.Event[ft.TextField]):
+        '''Обработка изменения input'a для видимости кнопки переименования.'''
+
+        if not isinstance(e.data, str):
+            return
+
+        if e.data != self._task.title and e.data.strip() != '':
+            self._rename_btn.icon_color = ColorPalette.MAIN
+            self._rename_btn.disabled = False
+
+        else:
+            self._rename_btn.icon_color = ColorPalette.GRAY
+            self._rename_btn.disabled = True
