@@ -60,7 +60,6 @@ class NoteElement:
             text_size=16,
             hint_text='Описание',
             value=self._note.desc,
-            autofocus=True,
             multiline=True,
             expand=True,
             on_blur=self._save_desc_note,
