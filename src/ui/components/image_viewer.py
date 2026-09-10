@@ -13,7 +13,10 @@ ImageSwipingDirType = Literal['left', 'right']
 class GestureLimiters:
     '''Константы для обработки жестов.'''
 
-    SCALE_SPEED: ClassVar[int] = 5
+    MIN_MOVE: ClassVar[float] = 0.001
+    MIN_SCALE: ClassVar[float] = 0.5
+    BASE_SCALE: ClassVar[float] = 1.0
+    MAX_SCALE: ClassVar[float] = 5.0
     OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.2
 
 class ImageViewer:
@@ -35,6 +38,7 @@ class ImageViewer:
         self._file_index: int | None = None
 
         self._offset: tuple[float, float] | None = None
+        self._initial_scale: float | None = None
         self._scale: float | None = None
         self._image: ft.Image | None = None
         self._container: ft.SafeArea | None = None
@@ -65,6 +69,8 @@ class ImageViewer:
 
         gesture_detector = ft.GestureDetector(
             content=self._image,
+            drag_interval=16,
+            on_scale_start=self._on_scale_start,
             on_scale_update=self._on_scale_update,
             on_scale_end=self._on_scale_end
         )
@@ -111,27 +117,39 @@ class ImageViewer:
             self._offset = None
             self._scale = None
 
+    def _on_scale_start(self, _):
+        '''Сохранение скейла в начале жеста.'''
+
+        if self._scale is None:
+            return
+
+        self._initial_scale = self._scale
+
     def _on_scale_update(self, e: ft.ScaleUpdateEvent):
         '''Обработка жестов.'''
 
         if self._image is None or \
-        self._offset is None or \
-        self._scale is None or \
-        self._file_index is None:
+            self._offset is None or \
+            self._scale is None or \
+            self._file_index is None:
             return
 
-        if e.scale != 1.0:
-            if e.scale > 1.0 and self._scale < 5:
-                self._scale += (e.scale - 1.0) / GestureLimiters.SCALE_SPEED
-            elif e.scale < 1.0 and self._scale > 0.1:
-                self._scale -= (1.0 - e.scale) / GestureLimiters.SCALE_SPEED
+        if e.scale != GestureLimiters.BASE_SCALE and \
+            self._initial_scale is not None:
+            new_scale = self._initial_scale * e.scale
+            new_scale = max(
+                GestureLimiters.MIN_SCALE,
+                min(GestureLimiters.MAX_SCALE, new_scale)
+            )
 
-            self._image.scale = self._scale
+            if abs(new_scale - self._scale) > GestureLimiters.MIN_MOVE:
+                self._scale = new_scale
+                self._image.scale = self._scale
 
         offset_x = self._offset[0] + e.focal_point_delta.x / self._width
         offset_y = 0.0
 
-        if self._scale > 1.0:
+        if self._scale > GestureLimiters.BASE_SCALE:
             offset_y = self._offset[1] + e.focal_point_delta.y / self._height
         else:
             if self._offset[0] < -GestureLimiters.OFFSET_IMAGE_CHANGE:
@@ -147,16 +165,19 @@ class ImageViewer:
         self._offset = (offset_x, offset_y)
         self._image.offset = self._offset
 
-    def _on_scale_end(self, _ = None):
+    def _on_scale_end(self, _):
         '''Перехватчик жестов после их завершения.'''
 
         if self._image is None or \
-        self._offset is None or \
-        self._scale is None:
+            self._offset is None or \
+            self._scale is None:
             return
 
-        if self._scale <= 1.0 and self._image_swiping_dir is None:
-            self._image.scale = self._scale = 1.0
+        self._initial_scale = None
+
+        if self._scale <= GestureLimiters.BASE_SCALE and \
+            self._image_swiping_dir is None:
+            self._image.scale = self._scale = GestureLimiters.BASE_SCALE
             self._image.offset = self._offset = (0, 0)
 
         if self._image_swiping_dir is not None:
@@ -168,9 +189,9 @@ class ImageViewer:
         '''Обработка смены изображения.'''
 
         if self._image is None or \
-        self._offset is None or \
-        self._files is None or \
-        self._file_index is None:
+            self._offset is None or \
+            self._files is None or \
+            self._file_index is None:
             return
 
         files_count = len(self._files)

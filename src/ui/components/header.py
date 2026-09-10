@@ -23,7 +23,7 @@ class Header:
         self._weight = ft.FontWeight.BOLD if is_logo else None
         self._font_size = 32 if is_logo else 24
 
-        self._version = '1.0.2'
+        self._version = '1.0.3'
 
     @property
     def title(self):
