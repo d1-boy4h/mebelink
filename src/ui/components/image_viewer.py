@@ -128,6 +128,8 @@ class ImageViewer:
     def _on_scale_update(self, e: ft.ScaleUpdateEvent):
         '''Обработка жестов.'''
 
+        ft.context.disable_auto_update()
+
         if self._image is None or \
             self._offset is None or \
             self._scale is None or \
@@ -164,6 +166,8 @@ class ImageViewer:
 
         self._offset = (offset_x, offset_y)
         self._image.offset = self._offset
+
+        self._image.update()
 
     def _on_scale_end(self, _):
         '''Перехватчик жестов после их завершения.'''
