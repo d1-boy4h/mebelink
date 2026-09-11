@@ -1,3 +1,4 @@
+from asyncio import sleep
 from collections.abc import Callable
 from typing import ClassVar, Literal
 
@@ -10,14 +11,30 @@ from ..store import store
 
 ImageSwipingDirType = Literal['left', 'right']
 
-class GestureLimiters:
+class Constants:
     '''Константы для обработки жестов.'''
 
-    MIN_MOVE: ClassVar[float] = 0.001
+    MIN_SCALE_MOVE: ClassVar[float] = 0.001
     MIN_SCALE: ClassVar[float] = 0.5
     BASE_SCALE: ClassVar[float] = 1.0
     MAX_SCALE: ClassVar[float] = 5.0
-    OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.2
+
+    OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.35
+    VELOCITY_THRESHOLD: ClassVar[float] = 700.0
+    FPS: ClassVar[int] = 60
+    ANIMATION_MS: ClassVar[int] = 150
+
+    BASE_ANIMATION: ClassVar[ft.Animation] = ft.Animation(
+        ANIMATION_MS, ft.AnimationCurve.EASE_OUT
+    )
+
+    SWIPE_ANIMATION_IN: ClassVar[ft.Animation] = ft.Animation(
+        ANIMATION_MS, ft.AnimationCurve.EASE_IN
+    )
+
+    SWIPE_ANIMATION_OUT: ClassVar[ft.Animation] = ft.Animation(
+        ANIMATION_MS, ft.AnimationCurve.EASE_OUT
+    )
 
 class ImageViewer:
     '''Компонент просмотра фотографий проекта.'''
@@ -44,14 +61,12 @@ class ImageViewer:
         self._container: ft.SafeArea | None = None
 
         self._image_swiping_dir: ImageSwipingDirType | None = None
+        self._swipe_velocity: float = 0.0
 
     def open(self, file: File):
         '''Открытие полноэкранного просмотра.'''
 
         self._page.views[-1].can_pop = False
-
-        self._offset = 0, 0
-        self._scale = 1.0
 
         self._files = store.current_files
         if self._files is None:
@@ -64,8 +79,14 @@ class ImageViewer:
             fit=ft.BoxFit.CONTAIN,
             width=self._page.width,
             height=self._page.height,
-            opacity=1
+            opacity=1,
+            animate_offset=Constants.BASE_ANIMATION,
+            animate_scale=Constants.BASE_ANIMATION,
+            animate_opacity=Constants.BASE_ANIMATION
         )
+
+        self._image.offset = self._offset = (0, 0)
+        self._image.scale = self._scale = Constants.BASE_SCALE
 
         gesture_detector = ft.GestureDetector(
             content=self._image,
@@ -136,37 +157,43 @@ class ImageViewer:
             self._file_index is None:
             return
 
-        if e.scale != GestureLimiters.BASE_SCALE and \
+        if e.scale != Constants.BASE_SCALE and \
             self._initial_scale is not None:
             new_scale = self._initial_scale * e.scale
             new_scale = max(
-                GestureLimiters.MIN_SCALE,
-                min(GestureLimiters.MAX_SCALE, new_scale)
+                Constants.MIN_SCALE,
+                min(Constants.MAX_SCALE, new_scale)
             )
 
-            if abs(new_scale - self._scale) > GestureLimiters.MIN_MOVE:
+            if abs(new_scale - self._scale) > Constants.MIN_SCALE_MOVE:
                 self._scale = new_scale
                 self._image.scale = self._scale
 
-        offset_x = self._offset[0] + e.focal_point_delta.x / self._width
+        delta_x = e.focal_point_delta.x / self._width
+        delta_y = e.focal_point_delta.y / self._height
+
+        offset_x = self._offset[0] + delta_x
         offset_y = 0.0
 
-        if self._scale > GestureLimiters.BASE_SCALE:
-            offset_y = self._offset[1] + e.focal_point_delta.y / self._height
-        else:
-            if self._offset[0] < -GestureLimiters.OFFSET_IMAGE_CHANGE:
-                self._image_swiping_dir = 'left'
+        if self._scale == Constants.BASE_SCALE:
+            swipe_velocity = delta_x * self._width * Constants.FPS
+
+            if abs(offset_x) > Constants.OFFSET_IMAGE_CHANGE:
+                self._image_swiping_dir = 'left' if offset_x < 0 else 'right'
                 self._image.opacity = 0.6
-            elif self._offset[0] > GestureLimiters.OFFSET_IMAGE_CHANGE:
-                self._image_swiping_dir = 'right'
-                self._image.opacity = 0.6
+
+            elif abs(swipe_velocity) >= Constants.VELOCITY_THRESHOLD:
+                self._image_swiping_dir = 'left' if swipe_velocity < 0 \
+                    else 'right'
+
             else:
                 self._image_swiping_dir = None
                 self._image.opacity = 1
 
-        self._offset = (offset_x, offset_y)
-        self._image.offset = self._offset
+        else:
+            offset_y = self._offset[1] + delta_y
 
+        self._image.offset = self._offset = (offset_x, offset_y)
         self._image.update()
 
     def _on_scale_end(self, _):
@@ -179,18 +206,23 @@ class ImageViewer:
 
         self._initial_scale = None
 
-        if self._scale <= GestureLimiters.BASE_SCALE and \
-            self._image_swiping_dir is None:
-            self._image.scale = self._scale = GestureLimiters.BASE_SCALE
+        if self._image_swiping_dir is not None:
+            self._page.run_task(self._on_change_image)
+            return
+
+        if self._scale <= Constants.BASE_SCALE:
+            self._image.animate_offset = Constants.BASE_ANIMATION
+            self._image.animate_scale = Constants.BASE_ANIMATION
+            self._image.scale = self._scale = Constants.BASE_SCALE
             self._image.offset = self._offset = (0, 0)
 
-        if self._image_swiping_dir is not None:
-            self._on_change_image()
-
+        self._image_swiping_dir = None
         self._image.opacity = 1
 
-    def _on_change_image(self):
+    async def _on_change_image(self):
         '''Обработка смены изображения.'''
+
+        ft.context.disable_auto_update()
 
         if self._image is None or \
             self._offset is None or \
@@ -198,7 +230,16 @@ class ImageViewer:
             self._file_index is None:
             return
 
+        self._image.animate_offset = Constants.SWIPE_ANIMATION_IN
+        self._image.opacity = 1
+        push_out_x = -1.0 if self._image_swiping_dir == 'left' else 1.0
+        self._image.offset = (push_out_x, 0)
+        self._image.update()
+
+        await sleep(Constants.ANIMATION_MS / 1000.0)
+
         files_count = len(self._files)
+
         if self._image_swiping_dir == 'left':
             if self._file_index + 1 == files_count:
                 self._file_index = 0
@@ -211,7 +252,23 @@ class ImageViewer:
                 self._file_index -= 1
 
         self._image.src = self._files[self._file_index].path
+        self._image.animate_offset = ft.Animation()
+        start_x = 1.0 if self._image_swiping_dir == 'left' else -1.0
+        self._image.offset = (start_x, 0)
+        self._image.scale = self._scale = Constants.BASE_SCALE
+        self._image.update()
+
+        await sleep(0.05)
+
+        self._image.animate_offset = Constants.SWIPE_ANIMATION_OUT
         self._image.offset = self._offset = (0, 0)
+        self._image.update()
+
+        await sleep(Constants.ANIMATION_MS / 1000.0)
+
+        self._image.animate_offset = Constants.BASE_ANIMATION
+        self._image_swiping_dir = None
+        self._image.update()
 
     def _show_delete_file_modal(self, _):
         '''Отображение модального окна подтверждения удаления изображения.'''
