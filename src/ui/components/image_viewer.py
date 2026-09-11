@@ -236,7 +236,7 @@ class ImageViewer:
         self._image.offset = (push_out_x, 0)
         self._image.update()
 
-        await sleep(Constants.ANIMATION_MS / 1000.0)
+        await sleep(0.05)
 
         files_count = len(self._files)
 
@@ -264,7 +264,7 @@ class ImageViewer:
         self._image.offset = self._offset = (0, 0)
         self._image.update()
 
-        await sleep(Constants.ANIMATION_MS / 1000.0)
+        await sleep(0.05)
 
         self._image.animate_offset = Constants.BASE_ANIMATION
         self._image_swiping_dir = None
