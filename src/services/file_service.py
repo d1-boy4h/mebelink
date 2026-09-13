@@ -1,6 +1,7 @@
 import logging
 import shutil
 from pathlib import Path
+from typing import ClassVar
 from uuid import UUID
 
 from ..models import File
@@ -10,9 +11,16 @@ from ..repositories import FileRepository
 class FileService:
     '''Сервис работы с файлами проектов.'''
 
+    _THUMBNAIL_SIZE: ClassVar[tuple[int, int]] = (300, 300)
+    _THUMBNAIL_QUALITY: ClassVar[int] = 75
+
     def __init__(self, file_repo: FileRepository, storage_path: Path):
         self._file_repo = file_repo
         self._storage_path = storage_path
+
+        self._thumbnails_path = self._storage_path / '.thumbnails'
+        self._thumbnails_path.mkdir(parents=True, exist_ok=True)
+
         self._logger = logging.getLogger('FileService')
 
     def _get_project_dir(self, project_uuid: UUID) -> Path:
@@ -22,6 +30,10 @@ class FileService:
         project_dir.mkdir(parents=True, exist_ok=True)
 
         return project_dir
+
+    def _get_thumbnail_path(self, file_id: int) -> Path:
+        '''Получение пути к миниатюре по id файла.'''
+        return self._thumbnails_path / f'{file_id}.jpg'
 
     def save_file(self, project_uuid: UUID, name: str, content: bytes) -> File:
         '''Сохранение файла на диск и в БД.'''
@@ -52,8 +64,8 @@ class FileService:
             file_path.unlink()
             self._logger.info(f'Физический файл \'{file.filename}\' удалён')
 
-            project_dir = self._get_project_dir(file.project_uuid)
-            if project_dir.exists() and not any(Path(project_dir).iterdir()):
+            project_dir = self._storage_path / str(file.project_uuid)
+            if project_dir.exists() and not any(project_dir.iterdir()):
                 project_dir.rmdir()
 
         return self._file_repo.delete(file)

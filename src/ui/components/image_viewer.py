@@ -93,7 +93,8 @@ class ImageViewer:
             drag_interval=16,
             on_scale_start=self._on_scale_start,
             on_scale_update=self._on_scale_update,
-            on_scale_end=self._on_scale_end
+            on_scale_end=self._on_scale_end,
+            on_double_tap=self._on_double_tap
         )
 
         container_content = ft.Container(
@@ -218,6 +219,18 @@ class ImageViewer:
 
         self._image_swiping_dir = None
         self._image.opacity = 1
+
+    def _on_double_tap(self, _):
+        '''Обработка двойного клика по изображению.'''
+
+        if self._image is None:
+            return
+
+        if self._scale == Constants.BASE_SCALE:
+            self._image.scale = self._scale = 2.0
+        else:
+            self._image.scale = self._scale = Constants.BASE_SCALE
+            self._image.offset = self._offset = (0, 0)
 
     async def _on_change_image(self):
         '''Обработка смены изображения.'''

@@ -96,6 +96,7 @@ class GalleryBlock:
 
                 except ValueError as e:
                     show_notify(self._page, f'{e}!', is_error=True)
+
         except Exception as e:  # noqa: BLE001
             show_notify(
                 self._page,
@@ -104,6 +105,7 @@ class GalleryBlock:
             )
 
             self._logger.error(f'{e}')
+
         finally:
             self._file_picker_btn.disabled = False
             self._file_picker_btn.bgcolor = ColorPalette.MAIN
