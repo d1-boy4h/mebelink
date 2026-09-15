@@ -88,7 +88,7 @@ class GalleryBlock:
             files = await self._file_picker.pick_files(
                 allow_multiple=True,
                 file_type=ft.FilePickerFileType.CUSTOM,
-                allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'],
+                allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'bmp'],
                 compression_quality=75
             )
 
