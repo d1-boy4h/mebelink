@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 import flet as ft
@@ -56,12 +57,19 @@ class GalleryBlock:
 
         gallery_elements = []
         for file in files:
-            image = ft.Image(file.path, fit=ft.BoxFit.FILL)
+            image = ft.Image(
+                src=file.path,
+                fit=ft.BoxFit.FILL,
+                cache_width=300,
+                cache_height=300
+            )
+
             file_btn = ft.Container(
                 image,
                 border_radius=10,
                 on_click=lambda _, f=file: self._viewer.open(f)
             )
+
             gallery_elements.append(file_btn)
 
         gallery_elements.append(self._file_picker_btn)
@@ -79,19 +87,24 @@ class GalleryBlock:
 
             files = await self._file_picker.pick_files(
                 allow_multiple=True,
-                file_type=ft.FilePickerFileType.IMAGE,
-                with_data=True
+                file_type=ft.FilePickerFileType.CUSTOM,
+                allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'bmp', 'gif'],
+                compression_quality=75
             )
 
             for file in files:
-                if file.bytes is None:
+                if file.path is None:
                     continue
 
                 try:
+                    content = await asyncio.to_thread(
+                        self._read_file_sync, file.path
+                    )
+
                     self._file_service.save_file(
                         store.current_project.uuid,
                         file.name,
-                        file.bytes
+                        content
                     )
 
                 except ValueError as e:
@@ -111,3 +124,9 @@ class GalleryBlock:
             self._file_picker_btn.bgcolor = ColorPalette.MAIN
 
         self.refresh()
+        self._page.update()
+
+    def _read_file_sync(self, path: str) -> bytes:
+        '''Синхронная функция чтения файла.'''
+        with open(path, 'rb') as f:
+            return f.read()

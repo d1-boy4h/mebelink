@@ -31,10 +31,6 @@ class FileService:
 
         return project_dir
 
-    def _get_thumbnail_path(self, file_id: int) -> Path:
-        '''Получение пути к миниатюре по id файла.'''
-        return self._thumbnails_path / f'{file_id}.jpg'
-
     def save_file(self, project_uuid: UUID, name: str, content: bytes) -> File:
         '''Сохранение файла на диск и в БД.'''
 
@@ -46,11 +42,13 @@ class FileService:
 
         file_path.write_bytes(content)
 
-        return self._file_repo.save(File(
-            project_uuid=project_uuid,
-            filename=name,
-            path=str(file_path)
-        ))
+        return self._file_repo.save(
+            File(
+                project_uuid=project_uuid,
+                filename=name,
+                path=str(file_path)
+            )
+        )
 
     def get_all(self, project_uuid: UUID) -> list[File]:
         '''Получение всех файлов проекта.'''
@@ -79,11 +77,11 @@ class FileService:
             self._logger.info(f'Папка проекта \'{project_uuid!s}\' удалена')
 
         files = self._file_repo.get_by_project(project_uuid)
+
         deleted_files = []
         for file in files:
-            if file.id is not None:
-                deleted_file = self._file_repo.delete(file)
-                if isinstance(deleted_file, File):
-                    deleted_files.append(deleted_file)
+            deleted_file = self._file_repo.delete(file)
+            if isinstance(deleted_file, File):
+                deleted_files.append(deleted_file)
 
         return deleted_files

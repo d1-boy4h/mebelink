@@ -24,7 +24,7 @@ class TaskCreationButton:
     def build(self) -> ft.Control:
         '''Сборка интерфейса элемента.'''
 
-        self._add_btn = ft.ElevatedButton(
+        self._add_btn = ft.Button(
             content=ft.Text('+', size=20, color=ColorPalette.MAIN),
             expand=True,
             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),

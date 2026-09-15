@@ -86,7 +86,7 @@ class TaskElement:
 
         self._on_change_checkbox(dont_update=True)
 
-        return ft.ElevatedButton(
+        return ft.Button(
             content=ft.Column([title_and_checkbox, self._buttons], spacing=0),
             expand=True,
             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), padding=ft.Padding(20, 20, 10, 20)),

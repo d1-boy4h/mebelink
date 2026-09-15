@@ -58,7 +58,7 @@ class ProjectElement:
             spacing=0
         )
 
-        project_element = ft.ElevatedButton(
+        project_element = ft.Button(
             project_content,
             on_click=lambda _: on_click(self._project),
             style = ft.ButtonStyle(
