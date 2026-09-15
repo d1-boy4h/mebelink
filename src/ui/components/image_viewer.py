@@ -19,11 +19,7 @@ class ImageViewer:
     _MAX_SCALE: ClassVar[float] = 5.0
 
     _OFFSET_IMAGE_CHANGE: ClassVar[float] = 0.35
-    _OFFSET_IMAGE_CLOSE: ClassVar[float] = 0.15
-
     _VELOCITY_THRESHOLD: ClassVar[float] = 700.0
-    _GESTURE_THRESHOLD: ClassVar[float] = 0.04
-
     _FPS: ClassVar[int] = 60
     _ANIMATION_MS: ClassVar[int] = 100
 

@@ -1,7 +1,6 @@
 import logging
 import shutil
 from pathlib import Path
-from typing import ClassVar
 from uuid import UUID
 
 from ..models import File
@@ -11,15 +10,9 @@ from ..repositories import FileRepository
 class FileService:
     '''Сервис работы с файлами проектов.'''
 
-    _THUMBNAIL_SIZE: ClassVar[tuple[int, int]] = (300, 300)
-    _THUMBNAIL_QUALITY: ClassVar[int] = 75
-
     def __init__(self, file_repo: FileRepository, storage_path: Path):
         self._file_repo = file_repo
         self._storage_path = storage_path
-
-        self._thumbnails_path = self._storage_path / '.thumbnails'
-        self._thumbnails_path.mkdir(parents=True, exist_ok=True)
 
         self._logger = logging.getLogger(self.__class__.__name__)
 
