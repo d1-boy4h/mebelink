@@ -192,7 +192,6 @@ class ImageViewer:
             offset_y = self._offset[1] + delta_y
 
         self._image.offset = self._offset = (offset_x, offset_y)
-        print(self._image.offset)
         self._image.update()
 
     def _on_scale_end(self, _):

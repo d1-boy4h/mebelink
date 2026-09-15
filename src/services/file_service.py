@@ -21,7 +21,7 @@ class FileService:
         self._thumbnails_path = self._storage_path / '.thumbnails'
         self._thumbnails_path.mkdir(parents=True, exist_ok=True)
 
-        self._logger = logging.getLogger('FileService')
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def _get_project_dir(self, project_uuid: UUID) -> Path:
         '''Получение пути к папке проекта.'''

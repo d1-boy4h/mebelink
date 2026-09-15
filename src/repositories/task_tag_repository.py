@@ -13,7 +13,7 @@ class TaskTagRepository:
 
     def __init__(self, engine: Engine):
         self._engine = engine
-        self._logger = logging.getLogger('TaskTagRepository')
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def _to_orm(self, tag: TaskTag) -> TaskTagDB:
         '''Преобразование модели из Pydantic в ORM.'''

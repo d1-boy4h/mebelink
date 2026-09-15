@@ -18,7 +18,7 @@ class GalleryBlock:
         self._file_service = file_service
 
         self._viewer = ImageViewer(page, file_service, self.refresh)
-        self._logger = logging.getLogger('GalleryBlock')
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def build(self) -> ft.Control:
         '''Построение интерфейса блока.'''
