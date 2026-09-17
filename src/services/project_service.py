@@ -58,3 +58,13 @@ class ProjectService:
             self._note_service.delete_project_notes(project_uuid)
 
             return self._project_repo.delete(project_uuid)
+
+    def export(self, project_uuid: UUID, path: str):
+        '''Экспорт проекта в .mblp файл.'''
+
+        project = self._project_repo.get_by_uuid(project_uuid)
+
+        if project:
+            print(project.title)
+
+        print(path)
