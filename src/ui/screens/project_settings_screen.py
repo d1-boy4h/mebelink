@@ -4,7 +4,7 @@ import flet as ft
 
 from ...constants import ColorPalette, ProjectStatus, RouterPaths
 from ...services import ProjectService
-from ..components import Header
+from ..components import ExportProjectButton, Header
 from ..store import store
 from ..utils import show_notify
 from .base_screen import BaseScreen
@@ -23,9 +23,14 @@ class ProjectSettingsScreen(BaseScreen):
         if store.current_project is None:
             raise RuntimeError('Такого проекта не существует')
 
+        export_project_btn = ExportProjectButton(
+            self._page, self._project_service
+        )
+
         self._header_component = Header(
-            'Настройки',
-            on_back=self._save_project
+            store.current_project.title,
+            on_back=self._save_project,
+            extra_buttons=[export_project_btn.build()]
         )
 
         header = self._header_component.build()

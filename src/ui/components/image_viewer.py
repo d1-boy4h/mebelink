@@ -24,7 +24,7 @@ class ImageViewer:
     _ANIMATION_MS: ClassVar[int] = 100
 
     _BASE_ANIMATION: ClassVar[ft.Animation] = ft.Animation(
-        _ANIMATION_MS, ft.AnimationCurve.LINEAR
+        _ANIMATION_MS, ft.AnimationCurve.EASE_OUT
     )
 
     _SWIPE_ANIMATION_IN: ClassVar[ft.Animation] = ft.Animation(

@@ -41,12 +41,18 @@ class ProjectScreen(BaseScreen):
         if self._project is None:
             raise RuntimeError('Такого проекта не существует')
 
+        to_settings_screen_btn = ft.IconButton(
+            icon=ft.Icons.SETTINGS,
+            icon_color='#fff',
+            on_click=lambda: self._page.navigate(
+                RouterPaths.SETTINGS_SCREEN
+            )
+        )
+
         self._header_component = Header(
             self._project.title,
             on_back=self._back_to_home_screen_handler,
-            on_settings=lambda: self._page.navigate(
-                RouterPaths.SETTINGS_SCREEN
-            )
+            extra_buttons=[to_settings_screen_btn]
         )
 
         header = self._header_component.build()

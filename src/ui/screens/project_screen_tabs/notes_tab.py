@@ -8,7 +8,7 @@ from ...store import store
 class NotesTab:
     '''Вкладка с заметками проекта.'''
 
-    def __init__( self, page: ft.Page, note_service: NoteService):
+    def __init__(self, page: ft.Page, note_service: NoteService):
         self._page = page
         self._note_service = note_service
 

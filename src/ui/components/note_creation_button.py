@@ -25,10 +25,12 @@ class NoteCreationButton:
 
         self._add_btn = ft.Button(
             content=ft.Text('+', size=20, color=ColorPalette.MAIN),
-            expand=True,
-            bgcolor='#fff',
-            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-            on_click=lambda _: setattr(self, 'is_creating', True)
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=10),
+                bgcolor='#fff'
+            ),
+            on_click=lambda _: setattr(self, 'is_creating', True),
+            expand=True
         )
 
         self._container = ft.Row([self._add_btn])

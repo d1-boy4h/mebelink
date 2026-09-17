@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import flet as ft
 
-from ...constants import ColorPalette
+from ...constants import ColorPalette, MetaInfo
 
 
 class Header:
@@ -13,17 +13,15 @@ class Header:
         title: str,
         is_logo: bool = False,
         on_back: Callable | None = None,
-        on_settings: Callable | None = None
+        extra_buttons: list[ft.Control] | None = None
     ):
         self.__title = title
         self._on_back = on_back
-        self._on_settings = on_settings
+        self._extra_buttons = extra_buttons
 
         self._is_logo = is_logo
         self._weight = ft.FontWeight.BOLD if is_logo else None
         self._font_size = 32 if is_logo else 24
-
-        self._version = '1.1'
 
     @property
     def title(self):
@@ -53,23 +51,18 @@ class Header:
             on_click=self._on_back
         )
 
-        settings_button = ft.IconButton(
-            icon=ft.Icons.SETTINGS,
-            icon_color='#fff',
-            on_click=self._on_settings
-        )
-
         header_content = ft.Row([self._header_title])
 
         if self._on_back is not None:
             header_content.controls = [back_button] + header_content.controls
 
-        if self._on_settings is not None:
-            header_content.controls.append(settings_button)
+        if self._extra_buttons is not None:
+            buttons = ft.Row(self._extra_buttons)
+            header_content.controls.append(buttons)
 
         if self._is_logo:
             version = ft.Text(
-                f'v{self._version}',
+                f'v{MetaInfo.VERSION}',
                 color='#ffffff',
                 opacity=0.5
             )
