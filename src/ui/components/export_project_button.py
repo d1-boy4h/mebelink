@@ -7,7 +7,7 @@ from ..utils import show_notify
 
 
 class ExportProjectButton:
-    '''Кнопка экспорта проекта в файл.'''
+    '''Кнопка экспорта проекта в mblp-файл.'''
 
     def __init__(self, page: ft.Page, project_service: ProjectService):
         self._page = page
@@ -42,16 +42,16 @@ class ExportProjectButton:
             )
 
             if path is not None:
-                # self._project_service.export_to_mblp(
-                #     store.current_project.uuid, path
-                # )
+                self._project_service.export_to_mblp(
+                    store.current_project.uuid, path
+                )
 
                 show_notify(self._page, 'Проект успешно экспортирован')
 
-        except _:
+        except RuntimeError as error:
             show_notify(
                 self._page,
-                'Кажется, что-то сломалось...',
+                str(error),
                 is_error=True
             )
 

@@ -161,15 +161,15 @@ class ProjectSettingsScreen(BaseScreen):
                 dates,
                 self._save_button
             ],
-            spacing=15
+            spacing=15,
+            padding=ft.Padding.all(20)
         )
 
         body = ft.Container(
             settings_list,
             bgcolor=ColorPalette.BACKGROUND,
             expand=True,
-            width=float('inf'),
-            padding=ft.Padding(20, 20, 20, 0)
+            width=float('inf')
         )
 
         screen_content = ft.Column([header, body], spacing=0)

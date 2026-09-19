@@ -49,6 +49,7 @@ class App:
             self._project_repo,
             self._file_service,
             self._task_tag_service,
+            self._task_service,
             self._note_service
         )
 
