@@ -50,7 +50,7 @@ class HomeScreen(BaseScreen):
             margin=ft.Margin(0, 0, 30, 30),
             right=0,
             bottom=0,
-            on_click=self._show_create_project_modal
+            on_click=lambda: self._page.navigate(RouterPaths.PROJECT_CREATION)
         )
 
         screen_content = ft.Stack([body, create_project_button])
@@ -71,37 +71,6 @@ class HomeScreen(BaseScreen):
 
         return elements
 
-    def _show_create_project_modal(self, _):
-        '''Отображение модального окна создания проекта.'''
-
-        self._text_input = ft.TextField(
-            hint_text='Новый проект',
-            autofocus=True,
-            border=ft.InputBorder.NONE,
-            text_size=20
-        )
-
-        accept_button = ft.Button(
-            'создать',
-            on_click=lambda _: self._create_project(self._text_input.value),
-            color='#fff',
-            width=float('inf'),
-            style=ft.ButtonStyle(
-                bgcolor=ColorPalette.MAIN,
-                text_style=ft.TextStyle(size=18),
-                padding=ft.Padding(20, 15, 20, 15)
-            )
-        )
-
-        modal = ft.AlertDialog(
-            self._text_input,
-            shape=ft.RoundedRectangleBorder(radius=5),
-            actions=[accept_button],
-            bgcolor='#fff'
-        )
-
-        self._page.show_dialog(modal)
-
     def _go_to_project_screen(self, project: Project):
         '''Переход на экран проекта.'''
 
@@ -112,26 +81,14 @@ class HomeScreen(BaseScreen):
         '''Обновление листа проектов.'''
 
         self._project_list_content.controls.clear()
-        self._project_list_content.controls.extend(self._get_projects())
+        self._project_list_content.controls = self._get_projects()
 
-    def _create_project(self, title: str):
-        '''Создание проекта в модальном окне.'''
 
-        # Пасхал очка
-        valid_title = title.lower().strip()
-        if valid_title == 'сова' or valid_title == 'совы':
-            pashalka = '\n' * 10 + '🦉 UwU 🦉' + '\n' * 10
-            self._page.pop_dialog()
-            self._page.show_dialog(ft.SnackBar(
-                content=ft.Text(pashalka, align=ft.Alignment.CENTER),
-                behavior=ft.SnackBarBehavior.FLOATING,
-                bgcolor=ColorPalette.GREEN
-            ))
-            self._text_input.value = ''
-            return
+    # def _create_project(self, title: str):
+    #     '''Создание проекта в модальном окне.'''
 
-        new_project = self._project_service.create_project(title)
-        self._go_to_project_screen(new_project)
+    #     new_project = self._project_service.create_project(title)
+    #     self._go_to_project_screen(new_project)
 
-        self._text_input.value = ''
-        self._page.pop_dialog()
+    #     self._text_input.value = ''
+    #     self._page.pop_dialog()

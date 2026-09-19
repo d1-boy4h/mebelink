@@ -9,7 +9,13 @@ from ..services import (
     TaskService,
     TaskTagService,
 )
-from .screens import BaseScreen, HomeScreen, ProjectScreen, ProjectSettingsScreen
+from .screens import (
+    BaseScreen,
+    HomeScreen,
+    ProjectCreationScreen,
+    ProjectScreen,
+    ProjectSettingsScreen,
+)
 
 
 class Interface:
@@ -84,6 +90,7 @@ class Interface:
 
         self._screens: dict[str, BaseScreen] = {
             RouterPaths.HOME: HomeScreen(page, self._project_service),
+            RouterPaths.PROJECT_CREATION: ProjectCreationScreen(page, self._project_service),
             RouterPaths.PROJECT: ProjectScreen(
                 page,
                 self._project_service,
