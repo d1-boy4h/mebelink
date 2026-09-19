@@ -11,7 +11,7 @@ from .base_screen import BaseScreen
 
 
 class ProjectSettingsScreen(BaseScreen):
-    '''Вкладка настроек проекта.'''
+    '''Экран настроек проекта.'''
 
     def __init__(self, page: ft.Page, project_service: ProjectService):
         super().__init__(page)
@@ -214,7 +214,7 @@ class ProjectSettingsScreen(BaseScreen):
             self._project_service.update_project(project)
             show_notify(self._page, 'Проект успешно сохранён')
 
-        self._page.navigate(RouterPaths.PROJECT_SCREEN)
+        self._page.navigate(RouterPaths.PROJECT)
 
     def _button_switch(self, _):
         '''Выключает кнопку сохранения, если в title проекта пуст.'''

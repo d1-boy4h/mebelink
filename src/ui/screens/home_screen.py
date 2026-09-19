@@ -106,7 +106,7 @@ class HomeScreen(BaseScreen):
         '''Переход на экран проекта.'''
 
         store.current_project = project
-        self._page.navigate(RouterPaths.PROJECT_SCREEN)
+        self._page.navigate(RouterPaths.PROJECT)
 
     def update_project_list(self):
         '''Обновление листа проектов.'''

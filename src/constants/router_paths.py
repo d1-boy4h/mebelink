@@ -4,6 +4,8 @@ from enum import StrEnum
 class RouterPaths(StrEnum):
     '''Пути для экранов.'''
 
-    HOME_SCREEN     = '/'
-    PROJECT_SCREEN  = '/project'
-    SETTINGS_SCREEN = '/settings'
+    HOME             = '/'
+    SETTINGS         = '/settings'
+    PROJECT          = '/project'
+    PROJECT_CREATION = '/project-creation'
+    PROJECT_SETTINGS = '/project-settings'

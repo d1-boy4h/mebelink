@@ -45,7 +45,7 @@ class ProjectScreen(BaseScreen):
             icon=ft.Icons.SETTINGS,
             icon_color='#fff',
             on_click=lambda: self._page.navigate(
-                RouterPaths.SETTINGS_SCREEN
+                RouterPaths.PROJECT_SETTINGS
             )
         )
 
@@ -131,7 +131,7 @@ class ProjectScreen(BaseScreen):
         store.current_tags = None
         store.current_notes = None
 
-        self._page.navigate(RouterPaths.HOME_SCREEN)
+        self._page.navigate(RouterPaths.HOME)
         self._page.pop_dialog()
 
     def update_project_info(self):
@@ -149,4 +149,4 @@ class ProjectScreen(BaseScreen):
 
         store.current_project = None
         store.current_files = None
-        self._page.navigate(RouterPaths.HOME_SCREEN)
+        self._page.navigate(RouterPaths.HOME)

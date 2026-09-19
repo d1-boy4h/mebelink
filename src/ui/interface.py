@@ -34,7 +34,7 @@ class Interface:
 
         screen = self._screens.get(route)
         if screen is None:
-            screen = self._screens[RouterPaths.HOME_SCREEN]
+            screen = self._screens[RouterPaths.HOME]
 
         return screen.build(route)
 
@@ -53,12 +53,12 @@ class Interface:
                 view_list.clear()
                 view_list.extend(new_view_list)
 
-                if e.route == RouterPaths.HOME_SCREEN:
-                    home_screen = self._screens[RouterPaths.HOME_SCREEN]
+                if e.route == RouterPaths.HOME:
+                    home_screen = self._screens[RouterPaths.HOME]
                     home_screen.update_project_list() # type: ignore
 
-                if e.route == RouterPaths.PROJECT_SCREEN:
-                    project_screen = self._screens[RouterPaths.PROJECT_SCREEN]
+                if e.route == RouterPaths.PROJECT:
+                    project_screen = self._screens[RouterPaths.PROJECT]
                     project_screen.update_project_info() # type: ignore
 
                 break
@@ -80,11 +80,11 @@ class Interface:
         '''Инициализация Flet-приложения.'''
 
         self._page = page
-        self._current_route = RouterPaths.HOME_SCREEN
+        self._current_route = RouterPaths.HOME
 
         self._screens: dict[str, BaseScreen] = {
-            RouterPaths.HOME_SCREEN: HomeScreen(page, self._project_service),
-            RouterPaths.PROJECT_SCREEN: ProjectScreen(
+            RouterPaths.HOME: HomeScreen(page, self._project_service),
+            RouterPaths.PROJECT: ProjectScreen(
                 page,
                 self._project_service,
                 self._file_service,
@@ -92,7 +92,7 @@ class Interface:
                 self._task_service,
                 self._note_service
             ),
-            RouterPaths.SETTINGS_SCREEN: ProjectSettingsScreen(page, self._project_service),
+            RouterPaths.PROJECT_SETTINGS: ProjectSettingsScreen(page, self._project_service),
         }
 
         page.title = 'МебеЛинк'

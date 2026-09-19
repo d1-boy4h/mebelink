@@ -86,7 +86,7 @@ class MainTab:
         self._project_service.delete_project(project.uuid)
         store.current_project = None
         store.current_files = None
-        self._page.navigate(RouterPaths.HOME_SCREEN)
+        self._page.navigate(RouterPaths.HOME)
         self._page.pop_dialog()
 
     def update_blocks(self):
