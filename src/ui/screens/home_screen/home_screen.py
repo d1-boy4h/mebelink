@@ -1,11 +1,12 @@
 import flet as ft
 
-from ...constants import ColorPalette, RouterPaths
-from ...models import Project
-from ...services import ProjectService
-from ..components import Header, ProjectElement
-from ..store import store
-from .base_screen import BaseScreen
+from ....constants import ColorPalette, RouterPaths
+from ....models import Project
+from ....services import ProjectService
+from ...components import Header
+from ...store import store
+from ..base_screen import BaseScreen
+from .components import ProjectElement
 
 
 class HomeScreen(BaseScreen):

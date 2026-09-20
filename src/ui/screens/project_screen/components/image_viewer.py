@@ -4,10 +4,10 @@ from typing import ClassVar, Literal
 
 import flet as ft
 
-from ...constants import ColorPalette
-from ...models import File
-from ...services import FileService
-from ..store import store
+from .....constants import ColorPalette
+from .....models import File
+from .....services import FileService
+from ....store import store
 
 
 class ImageViewer:

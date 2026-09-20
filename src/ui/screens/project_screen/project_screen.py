@@ -1,17 +1,17 @@
 import flet as ft
 
-from ...constants import ColorPalette, RouterPaths
-from ...services import (
+from ....constants import ColorPalette, RouterPaths
+from ....services import (
     FileService,
     NoteService,
     ProjectService,
     TaskService,
     TaskTagService,
 )
-from ..components import Header
-from ..store import store
-from .base_screen import BaseScreen
-from .project_screen_tabs import MainTab, NotesTab, TasksTab
+from ...components import Header
+from ...store import store
+from ..base_screen import BaseScreen
+from .tabs import MainTab, NotesTab, TasksTab
 
 
 class ProjectScreen(BaseScreen):

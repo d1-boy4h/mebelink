@@ -2,9 +2,9 @@ from collections.abc import Callable
 
 import flet as ft
 
-from ...constants import ColorPalette
-from ...models import Task
-from ...services import TaskService
+from .....constants import ColorPalette
+from .....models import Task
+from .....services import TaskService
 
 
 class TaskElement:

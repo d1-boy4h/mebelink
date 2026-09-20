@@ -3,10 +3,10 @@ import logging
 
 import flet as ft
 
-from ...constants import ColorPalette
-from ...services import FileService
-from ..store import store
-from ..utils import show_notify
+from .....constants import ColorPalette
+from .....services import FileService
+from ....store import store
+from ....utils import show_notify
 from .image_viewer import ImageViewer
 
 

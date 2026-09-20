@@ -2,20 +2,20 @@ from collections.abc import Callable
 
 import flet as ft
 
-from ...constants import ColorPalette
-from ...services import TaskTagService
-from ..store import store
+from .....constants import ColorPalette
+from .....services import NoteService
+from ....store import store
 
 
-class TagCreationButton:
+class NoteCreationButton:
     '''Элемент задачи внутри раздела.'''
 
     def __init__(
         self,
-        task_tag_service: TaskTagService,
+        note_service: NoteService,
         refresh_list_callback: Callable
     ):
-        self._task_tag_service = task_tag_service
+        self._note_service = note_service
         self._refresh_list_callback = refresh_list_callback
 
         self.__is_creating = False
@@ -25,10 +25,12 @@ class TagCreationButton:
 
         self._add_btn = ft.Button(
             content=ft.Text('+', size=20, color=ColorPalette.MAIN),
-            expand=True,
-            bgcolor='#fff',
-            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-            on_click=lambda _: setattr(self, 'is_creating', True)
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=10),
+                bgcolor='#fff'
+            ),
+            on_click=lambda _: setattr(self, 'is_creating', True),
+            expand=True
         )
 
         self._container = ft.Row([self._add_btn])
@@ -51,7 +53,7 @@ class TagCreationButton:
 
         if value and not self.is_creating:
             self._title_input = ft.TextField(
-                hint_text='Новый раздел',
+                hint_text='Новая заметка',
                 text_size=16,
                 autofocus=True,
                 border=ft.InputBorder.NONE,
@@ -92,5 +94,5 @@ class TagCreationButton:
         if store.current_project is None:
             return
 
-        self._task_tag_service.create(title, store.current_project.uuid)
+        self._note_service.create(title, store.current_project.uuid)
         self._refresh_list_callback()

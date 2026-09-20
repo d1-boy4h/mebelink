@@ -1,8 +1,8 @@
 import flet as ft
 
-from ...constants import ColorPalette, RouterPaths
-from ...models import Project
-from ..utils import show_notify
+from .....constants import ColorPalette, RouterPaths
+from .....models import Project
+from ....utils import show_notify
 
 
 class InfoBlock:

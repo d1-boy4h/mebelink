@@ -1,8 +1,8 @@
 import flet as ft
 
-from ....services import TaskService, TaskTagService
-from ...components import TagCreationButton, TaskTagElement
-from ...store import store
+from .....services import TaskService, TaskTagService
+from ....store import store
+from ..components import TagCreationButton, TaskTagElement
 
 
 class TasksTab:

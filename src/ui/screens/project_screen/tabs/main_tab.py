@@ -1,9 +1,9 @@
 import flet as ft
 
-from ....constants import ColorPalette, RouterPaths
-from ....services import FileService, ProjectService
-from ...components import GalleryBlock, InfoBlock
-from ...store import store
+from .....constants import ColorPalette, RouterPaths
+from .....services import FileService, ProjectService
+from ....store import store
+from ..components import GalleryBlock, InfoBlock
 
 
 class MainTab:

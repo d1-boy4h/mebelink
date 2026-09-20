@@ -2,8 +2,8 @@ from collections.abc import Callable
 
 import flet as ft
 
-from ...constants import ColorPalette, ProjectStatus
-from ...models import Project
+from .....constants import ColorPalette, ProjectStatus
+from .....models import Project
 
 
 class ProjectElement:

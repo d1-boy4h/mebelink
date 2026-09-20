@@ -1,8 +1,8 @@
 import flet as ft
 
-from ....services import NoteService
-from ...components import NoteCreationButton, NoteElement
-from ...store import store
+from .....services import NoteService
+from ....store import store
+from ..components import NoteCreationButton, NoteElement
 
 
 class NotesTab:
