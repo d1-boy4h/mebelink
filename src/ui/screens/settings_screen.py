@@ -28,7 +28,7 @@ class SettingsScreen(BaseScreen):
         )
 
         self._export_logs_btn = ft.Button(
-            'Экспорт логов',
+            'Сохранить логи в zip-архив',
             color='#fff',
             bgcolor=ColorPalette.MAIN,
             expand=True,

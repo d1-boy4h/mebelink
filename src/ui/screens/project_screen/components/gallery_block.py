@@ -110,7 +110,7 @@ class GalleryBlock:
                 except ValueError as e:
                     show_notify(self._page, f'{e}!', is_error=True)
 
-        except Exception as e:  # noqa: BLE001
+        except Exception as e: # noqa: BLE001
             show_notify(
                 self._page,
                 'Кажется, что-то сломалось... (подробности в логе)',

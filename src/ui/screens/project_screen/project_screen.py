@@ -118,22 +118,6 @@ class ProjectScreen(BaseScreen):
         appbar_wrapper = ft.SafeArea(screen_content, expand=True)
         return ft.View([appbar_wrapper], route, padding=0)
 
-    def _on_project_delete(self, _):
-        '''Удаление проекта.'''
-
-        project = store.current_project
-        if project is None: return
-
-        self._project_service.delete_project(project.uuid)
-
-        store.current_project = None
-        store.current_files = None
-        store.current_tags = None
-        store.current_notes = None
-
-        self._page.navigate(RouterPaths.HOME)
-        self._page.pop_dialog()
-
     def update_project_info(self):
         '''Обновление информации о проекте.'''
 
