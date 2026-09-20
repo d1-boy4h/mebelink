@@ -67,7 +67,7 @@ class ProjectService:
 
         return self._project_repo.delete(project_uuid)
 
-    def export_to_mblp(self, project_uuid: UUID, path: str):
+    def export_to_mblp(self, project_uuid: UUID, path: str) -> str:
         '''Экспорт проекта в .mblp файл.'''
 
         project = self.get_by_uuid(project_uuid)
@@ -113,6 +113,9 @@ class ProjectService:
 
                 for file in files:
                     zf.write(file.path, f'media/{file.filename}')
+
         except Exception as e:  # noqa: BLE001
             self._logger.error(e)
-            raise RuntimeError('Ошибка экспорта файла (подробности с логах)')
+            raise RuntimeError('Ошибка экспорта файла (подробности в логах)')
+
+        return path

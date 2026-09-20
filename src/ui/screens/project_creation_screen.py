@@ -28,7 +28,8 @@ class ProjectCreationScreen(BaseScreen):
             label='Название проекта',
             text_size=16,
             border=ft.InputBorder.NONE,
-            multiline=True
+            multiline=True,
+            autofocus=True
         )
 
         title = ft.Container(

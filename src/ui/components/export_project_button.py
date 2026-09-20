@@ -46,7 +46,10 @@ class ExportProjectButton:
                     store.current_project.uuid, path
                 )
 
-                show_notify(self._page, 'Проект успешно экспортирован')
+                show_notify(
+                    page=self._page,
+                    text=f'Проект успешно экспортирован:\n{path}'
+                )
 
         except RuntimeError as error:
             show_notify(

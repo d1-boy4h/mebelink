@@ -2,7 +2,7 @@ from collections.abc import Callable
 
 import flet as ft
 
-from ...constants import ColorPalette, MetaInfo
+from ...constants import ColorPalette
 
 
 class Header:
@@ -59,14 +59,6 @@ class Header:
         if self._extra_buttons is not None:
             buttons = ft.Row(self._extra_buttons)
             header_content.controls.append(buttons)
-
-        if self._is_logo:
-            version = ft.Text(
-                f'v{MetaInfo.VERSION}',
-                color='#ffffff',
-                opacity=0.5
-            )
-            header_content.controls.append(version)
 
         header = ft.Container(
             header_content,

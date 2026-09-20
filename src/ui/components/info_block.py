@@ -1,6 +1,6 @@
 import flet as ft
 
-from ...constants import ColorPalette
+from ...constants import ColorPalette, RouterPaths
 from ...models import Project
 from ..utils import show_notify
 
@@ -18,12 +18,22 @@ class InfoBlock:
         self._column = ft.Column()
         self.refresh_rows()
 
-        return ft.Container(
+        return ft.Button(
             self._column,
             bgcolor='#fff',
-            border_radius=10,
-            padding=ft.Padding(10, 15, 10, 10),
-            alignment=ft.Alignment.TOP_LEFT
+            color='#000',
+            elevation=2,
+            on_click=lambda: self._page.navigate(
+                RouterPaths.PROJECT_SETTINGS
+            ),
+            style=ft.ButtonStyle(
+                padding=ft.Padding(10, 25, 10, 20),
+                shape=ft.RoundedRectangleBorder(radius=10),
+                text_style=ft.TextStyle(
+                    size=16,
+                    weight=ft.FontWeight.NORMAL
+                )
+            )
         )
 
     async def _on_phone_tap(self, _):

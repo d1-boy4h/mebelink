@@ -45,7 +45,7 @@ class ProjectScreen(BaseScreen):
             icon=ft.Icons.SETTINGS,
             icon_color='#fff',
             on_click=lambda: self._page.navigate(
-                RouterPaths.PROJECT_SETTINGS
+                RouterPaths.SETTINGS
             )
         )
 

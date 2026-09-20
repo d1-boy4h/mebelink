@@ -22,8 +22,20 @@ class HomeScreen(BaseScreen):
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
 
-        header_component = Header('МебеЛинк', is_logo=True)
-        header = header_component.build()
+        to_settings_screen_btn = ft.IconButton(
+            icon=ft.Icons.SETTINGS,
+            icon_color='#fff',
+            on_click=lambda: self._page.navigate(
+                RouterPaths.SETTINGS
+            )
+        )
+
+        header = Header(
+            'МебеЛинк',
+            is_logo=True,
+            extra_buttons=[to_settings_screen_btn]
+        )
+
 
         self._project_list_content = ft.ListView(
             self._get_projects(),
@@ -39,7 +51,7 @@ class HomeScreen(BaseScreen):
         )
 
         body = ft.Column(
-            [header, project_list],
+            [header.build(), project_list],
             spacing=0
         )
 
@@ -82,13 +94,3 @@ class HomeScreen(BaseScreen):
 
         self._project_list_content.controls.clear()
         self._project_list_content.controls = self._get_projects()
-
-
-    # def _create_project(self, title: str):
-    #     '''Создание проекта в модальном окне.'''
-
-    #     new_project = self._project_service.create_project(title)
-    #     self._go_to_project_screen(new_project)
-
-    #     self._text_input.value = ''
-    #     self._page.pop_dialog()

@@ -15,6 +15,7 @@ from .screens import (
     ProjectCreationScreen,
     ProjectScreen,
     ProjectSettingsScreen,
+    SettingsScreen,
 )
 
 
@@ -90,6 +91,7 @@ class Interface:
 
         self._screens: dict[str, BaseScreen] = {
             RouterPaths.HOME: HomeScreen(page, self._project_service),
+            RouterPaths.SETTINGS: SettingsScreen(page),
             RouterPaths.PROJECT_CREATION: ProjectCreationScreen(page, self._project_service),
             RouterPaths.PROJECT: ProjectScreen(
                 page,
