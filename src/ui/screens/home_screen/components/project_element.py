@@ -61,9 +61,7 @@ class ProjectElement:
         project_element = ft.Button(
             project_content,
             on_click=lambda _: on_click(self._project),
-            style = ft.ButtonStyle(
-                side=None,    # Убираем обводку
-                elevation=0,  # Убираем тень
+            style=ft.ButtonStyle(
                 bgcolor='#fff',
                 shape=ft.RoundedRectangleBorder(radius=10),
                 padding=ft.Padding(20, 15, 20, 10),

@@ -21,7 +21,9 @@ def export_logs(path: str) -> str:
                     zf.write(log_file, log_file.name)
 
     except Exception as e:  # noqa: BLE001
-        logger.error(e)
-        raise RuntimeError('Непредвиденная ошибка экспорта')
+        error = RuntimeError(f'Непредвиденная ошибка экспорта: {e}')
+
+        logger.error(error)
+        raise error
 
     return path

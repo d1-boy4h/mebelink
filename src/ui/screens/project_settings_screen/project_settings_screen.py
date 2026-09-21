@@ -1,6 +1,6 @@
 import flet as ft
 
-from ....constants import ColorPalette
+from ....constants import ColorPalette, RouterPaths
 from ....services import ProjectService
 from ...components import Header
 from ...store import store
@@ -24,9 +24,18 @@ class ProjectSettingsScreen(BaseScreen):
         editing_tab = EditingTab(self._page, self._project_service)
         actions_tab = ActionsTab(self._page, self._project_service)
 
+        to_settings_screen_btn = ft.IconButton(
+            icon=ft.Icons.SETTINGS,
+            icon_color='#fff',
+            on_click=lambda: self._page.navigate(
+                RouterPaths.SETTINGS
+            )
+        )
+
         self._header_component = Header(
             store.current_project.title,
-            on_back=editing_tab.save_project
+            on_back=editing_tab.save_project,
+            extra_buttons=[to_settings_screen_btn]
         )
 
         header = self._header_component.build()

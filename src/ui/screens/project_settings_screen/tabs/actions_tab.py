@@ -96,6 +96,7 @@ class ActionsTab:
 
         try:
             file_picker = ft.FilePicker()
+
             path = await file_picker.save_file(
                 dialog_title='Сохранение проекта в файл...',
                 file_name=f'{store.current_project.title}.mblp'

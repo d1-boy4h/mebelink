@@ -54,13 +54,14 @@ class NoteRepository:
 
                 return self._to_pydantic(note_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка сохранения заметки \'{note.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка сохранения заметки \'{note.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка сохранения заметки: {error}')
+                self._logger.error(error)
+                raise error
 
     def get_by_id(self, note_id: int) -> Note | None:
         '''Получение заметки идентификатору.'''
@@ -98,7 +99,10 @@ class NoteRepository:
             note_db = session.get(NoteDB, note.id)
 
             if not note_db:
-                raise ValueError(f'Заметка \'{note.title}\' не найдена')
+                e = ValueError(f'Заметка \'{note.title}\' не найдена')
+
+                self._logger.error(e)
+                raise e
 
             note_db.title = note.title
             note_db.project_uuid = str(note.project_uuid)
@@ -111,13 +115,14 @@ class NoteRepository:
 
                 return self._to_pydantic(note_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка обновления заметки \'{note.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка обновления заметки \'{note.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка обновления заметки: {error}')
+                self._logger.error(error)
+                raise error
 
     def delete(self, note_id: int) -> Note | None:
         '''Удаление раздела.'''
@@ -136,10 +141,11 @@ class NoteRepository:
 
                 return deleted_note
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка удаления заметки \'{note_db.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка удаления заметки \'{note_db.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка удаления заметки: {error}')
+                self._logger.error(error)
+                raise error

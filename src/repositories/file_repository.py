@@ -54,13 +54,14 @@ class FileRepository:
 
                 return self._to_pydantic(file_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка сохранения файла \'{file.filename}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка сохранения файла \'{file.filename}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка сохранения файла: {error}')
+                self._logger.error(error)
+                raise error
 
     def get_by_id(self, file_id: int) -> File | None:
         '''Получение файла по id.'''
@@ -98,7 +99,10 @@ class FileRepository:
             file_db = session.get(FileDB, file.id)
 
             if not file_db:
-                raise ValueError(f'Файл \'{file.filename}\' не найден')
+                e = ValueError(f'Файл \'{file.filename}\' не найден')
+
+                self._logger.error(e)
+                raise e
 
             file_db.project_uuid = str(file.project_uuid)
             file_db.filename = file.filename
@@ -111,13 +115,14 @@ class FileRepository:
 
                 return self._to_pydantic(file_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка обновления файла \'{file.filename}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка обновления файла \'{file.filename}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка обновления файла: {error}')
+                self._logger.error(error)
+                raise error
 
     def delete(self, file: File) -> File | None:
         '''Удаление файла.'''
@@ -136,10 +141,11 @@ class FileRepository:
 
                 return deleted_file
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка удаления Файла \'{file.filename}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка удаления Файла \'{file.filename}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка удаления файла: {error}')
+                self._logger.error(error)
+                raise error

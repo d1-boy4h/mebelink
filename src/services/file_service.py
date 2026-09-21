@@ -31,7 +31,10 @@ class FileService:
         file_path = project_dir / name
 
         if file_path.exists():
-            raise ValueError('Данный файл уже существует')
+            error = ValueError(f'Файл {name} уже есть в этом проекте')
+
+            self._logger.error(error)
+            raise error
 
         file_path.write_bytes(content)
 

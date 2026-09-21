@@ -62,13 +62,14 @@ class ProjectRepository:
 
                 return self._to_pydantic(project_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка сохранения проекта \'{project.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка сохранения проекта \'{project.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка сохранения проекта: {error}')
+                self._logger.error(error)
+                raise error
 
     def get_by_uuid(self, uuid: UUID) -> Project | None:
         '''Получение проекта по uuid.'''
@@ -104,7 +105,10 @@ class ProjectRepository:
             project_db = session.get(ProjectDB, str(project.uuid))
 
             if not project_db:
-                raise ValueError(f'Проект \'{project.title}\' не найден')
+                e = ValueError(f'Проект \'{project.title}\' не найден')
+
+                self._logger.error(e)
+                raise e
 
             project_db.title = project.title
             project_db.status = project.status
@@ -125,13 +129,14 @@ class ProjectRepository:
 
                 return self._to_pydantic(project_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка обновления проекта \'{project.uuid!s}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка обновления проекта \'{project.uuid!s}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка обновления проекта: {error}')
+                self._logger.error(error)
+                raise error
 
     def delete(self, uuid: UUID) -> Project | None:
         '''Удаление проекта.'''
@@ -150,10 +155,11 @@ class ProjectRepository:
 
                 return deleted_project
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка удаления проекта \'{id}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка удаления проекта \'{id}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка удаления проекта: {error}')
+                self._logger.error(error)
+                raise error

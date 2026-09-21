@@ -52,13 +52,14 @@ class TaskTagRepository:
 
                 return self._to_pydantic(tag_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка сохранения раздела \'{tag.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка сохранения раздела \'{tag.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка сохранения раздела: {error}')
+                self._logger.error(error)
+                raise error
 
     def get_by_id(self, tag_id: int) -> TaskTag | None:
         '''Получение раздела по идентификатору.'''
@@ -96,7 +97,10 @@ class TaskTagRepository:
             tag_db = session.get(TaskTagDB, tag.id)
 
             if not tag_db:
-                raise ValueError(f'Раздел \'{tag.title}\' не найден')
+                e = ValueError(f'Раздел \'{tag.title}\' не найден')
+
+                self._logger.error(e)
+                raise e
 
             tag_db.title = tag.title
             tag_db.project_uuid = str(tag.project_uuid)
@@ -108,13 +112,14 @@ class TaskTagRepository:
 
                 return self._to_pydantic(tag_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка обновления раздела \'{tag.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка обновления раздела \'{tag.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка обновления раздела: {error}')
+                self._logger.error(error)
+                raise error
 
     def delete(self, tag_id: int) -> TaskTag | None:
         '''Удаление раздела.'''
@@ -133,10 +138,11 @@ class TaskTagRepository:
 
                 return deleted_tag
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка удаления раздела \'{tag_db.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка удаления раздела \'{tag_db.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка удаления раздела: {error}')
+                self._logger.error(error)
+                raise error

@@ -51,13 +51,14 @@ class TaskRepository:
 
                 return self._to_pydantic(task_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка сохранения задачи \'{task.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка сохранения задачи \'{task.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка сохранения задачи: {error}')
+                self._logger.error(error)
+                raise error
 
     def get_by_id(self, task_id: int) -> Task | None:
         '''Получение задачи по идентификатору.'''
@@ -95,7 +96,10 @@ class TaskRepository:
             task_db = session.get(TaskDB, task.id)
 
             if not task_db:
-                raise ValueError(f'Задача \'{task.title}\' не найдена')
+                e = ValueError(f'Задача \'{task.title}\' не найдена')
+
+                self._logger.error(e)
+                raise e
 
             task_db.task_tag_id=task.task_tag_id
             task_db.title=task.title
@@ -107,13 +111,14 @@ class TaskRepository:
 
                 return self._to_pydantic(task_db)
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка обновления задачи \'{task.title}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка обновления задачи \'{task.title}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка обновления задачи: {error}')
+                self._logger.error(error)
+                raise error
 
     def delete(self, task_id: int) -> Task | None:
         '''Удаление файла.'''
@@ -132,10 +137,11 @@ class TaskRepository:
 
                 return deleted_task
 
-            except SQLAlchemyError as error:
+            except SQLAlchemyError as e:
                 session.rollback()
-                self._logger.error(
-                    f'Ошибка удаления задачи \'{task_id}\': {error}'
+                error = RuntimeError(
+                    f'Ошибка удаления задачи \'{task_id}\': {e}'
                 )
 
-                raise RuntimeError(f'Ошибка удаления задачи: {error}')
+                self._logger.error(error)
+                raise error
