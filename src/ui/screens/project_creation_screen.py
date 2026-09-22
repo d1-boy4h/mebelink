@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 import flet as ft
 
@@ -17,6 +18,8 @@ class ProjectCreationScreen(BaseScreen):
     def __init__(self, page: ft.Page, project_service: ProjectService):
         super().__init__(page)
         self._project_service = project_service
+
+        self._logger = logging.getLogger(self.__class__.__name__)
 
     def build(self, route: str) -> ft.View:
         '''Сборка интерфейса экрана.'''
@@ -128,9 +131,10 @@ class ProjectCreationScreen(BaseScreen):
                         )
 
                 except TypeError as error:
+                    self._logger.error(error)
                     show_notify(self._page, str(error), is_error=True)
 
-        except RuntimeError as error:
+        except Exception as error:  # noqa: BLE001
             show_notify(self._page, str(error), is_error=True)
 
         finally:

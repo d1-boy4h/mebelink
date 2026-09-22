@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import flet as ft
 
 from .....constants import RouterPaths
@@ -95,22 +97,28 @@ class ActionsTab:
         self._export_project_btn.icon_color = ColorPalette.GRAY
 
         try:
-            file_picker = ft.FilePicker()
+            mblp_bytes = self._project_service.export_to_mblp(
+                store.current_project.uuid
+            )
 
+            file_picker = ft.FilePicker()
             path = await file_picker.save_file(
                 dialog_title='Сохранение проекта в файл...',
-                file_name=f'{store.current_project.title}.mblp'
+                file_name=f'{store.current_project.title}.mblp',
+                src_bytes=mblp_bytes
             )
 
             if path is not None:
-                self._project_service.export_to_mblp(
-                    store.current_project.uuid, path
-                )
+                if self._page.platform != ft.PagePlatform.ANDROID:
+                    Path(path).write_bytes(mblp_bytes)
 
-                show_notify(
-                    page=self._page,
-                    text=f'Проект успешно экспортирован:\n{path}'
-                )
+                    show_notify(
+                        page=self._page,
+                        text=f'Проект успешно экспортирован:\n{path}'
+                    )
+
+                else:
+                    show_notify(self._page, 'Проект успешно экспортирован')
 
         except RuntimeError as error:
             show_notify(

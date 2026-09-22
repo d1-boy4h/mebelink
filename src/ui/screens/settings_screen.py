@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import flet as ft
 
 from ...constants import ColorPalette, MetaInfo
@@ -96,30 +98,33 @@ class SettingsScreen(BaseScreen):
     async def _on_export_logs_btn_click(self, _):
         '''Обработка нажатия на кнопку экспорта логов.'''
 
-        file_picker = ft.FilePicker()
-
         self._export_logs_btn.disabled = True
         self._export_logs_btn.bgcolor = ColorPalette.GRAY
 
         try:
+            zip_bytes = export_logs()
+
+            file_picker = ft.FilePicker()
             path = await file_picker.save_file(
                 dialog_title='Экспорт логов...',
-                file_name='logs.zip'
+                file_name='logs.zip',
+                src_bytes=zip_bytes
             )
 
             if path is not None:
-                save_path = export_logs(path)
-                show_notify(
-                    page=self._page,
-                    text=f'Логи успешно сохранены:\n{save_path}'
-                )
+                if self._page.platform != ft.PagePlatform.ANDROID:
+                    Path(path).write_bytes(zip_bytes)
+
+                    show_notify(
+                        page=self._page,
+                        text=f'Логи успешно сохранены:\n{path}'
+                    )
+
+                else:
+                    show_notify(self._page, 'Логи успешно сохранены')
 
         except RuntimeError as error:
-            show_notify(
-                self._page,
-                str(error),
-                is_error=True
-            )
+            show_notify(self._page, str(error), is_error=True)
 
         finally:
             self._export_logs_btn.disabled = False

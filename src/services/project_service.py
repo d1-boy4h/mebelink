@@ -1,3 +1,4 @@
+import io
 import json
 import logging
 from collections.abc import Awaitable, Callable
@@ -77,8 +78,10 @@ class ProjectService:
 
         return self._project_repo.delete(project_uuid)
 
-    def export_to_mblp(self, project_uuid: UUID, path: str) -> str:
+    def export_to_mblp(self, project_uuid: UUID) -> bytes:
         '''Экспорт проекта в .mblp файл.'''
+
+        buffer = io.BytesIO()
 
         project = self.get_by_uuid(project_uuid)
 
@@ -106,15 +109,11 @@ class ProjectService:
             notes=self._note_service.get_all(project.uuid)
         )
 
-        valid_path = path
-        if not path.endswith('.mblp'):
-            valid_path = path + '.mblp'
-
         manifest_json = manifest.model_dump_json(indent=2)
         data_json = data.model_dump_json(indent=2)
 
         try:
-            with ZipFile(valid_path, 'w', ZIP_DEFLATED) as zf:
+            with ZipFile(buffer, 'w', ZIP_DEFLATED) as zf:
                 zf.writestr('manifest.json', manifest_json)
                 zf.writestr('data.json', data_json)
 
@@ -128,7 +127,7 @@ class ProjectService:
             self._logger.error(error)
             raise error
 
-        return path
+        return buffer.getvalue()
 
     async def import_from_mblp(
             self,

@@ -43,10 +43,10 @@ class ProjectSettingsScreen(BaseScreen):
         tab_bar = ft.TabBar(
             tabs=[
                 ft.Tab(ft.Row([
-                    ft.Icon(ft.Icons.DESCRIPTION), ft.Text('Данные')
+                    ft.Icon(ft.Icons.EDIT_NOTE), ft.Text('Данные')
                 ])),
                 ft.Tab(ft.Row([
-                    ft.Icon(ft.Icons.CHECKLIST), ft.Text('Действия')
+                    ft.Icon(ft.Icons.MORE_HORIZ), ft.Text('Действия')
                 ]))
             ],
             indicator_color=ColorPalette.MAIN,
