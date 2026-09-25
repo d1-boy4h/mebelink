@@ -2,9 +2,8 @@ from pathlib import Path
 
 import flet as ft
 
-from .....constants import RouterPaths
+from .....constants import ColorPalette, RouterPaths
 from .....services import ProjectService
-from ....components import ColorPalette
 from ....store import store
 from ....utils import show_notify
 

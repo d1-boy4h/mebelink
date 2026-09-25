@@ -1,1 +1,3 @@
-from .project_element import *
+from .project_element import ProjectElement
+
+__all__ = ['ProjectElement']

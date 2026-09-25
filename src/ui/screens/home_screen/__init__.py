@@ -1,1 +1,3 @@
-from .home_screen import *
+from .home_screen import HomeScreen
+
+__all__ = ['HomeScreen']
